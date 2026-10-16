@@ -30,7 +30,7 @@ public class User {
     @Column(nullable = false,length = 20)
     private Role role = Role.TEAM_MANAGER;
 
-    @Column(name="tow_factor_secret",length=64)
+    @Column(name="two_factor_secret",length=64)
     private String twoFactorSecret;
 
     @Column(name="two_factor_enabled",nullable = false)

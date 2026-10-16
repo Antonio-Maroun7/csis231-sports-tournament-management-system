@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tournaments")
@@ -32,8 +33,8 @@ public class Tournament {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false,length = 20)
-    private TournamentStatus tournamentStatus = TournamentStatus.DRAFT;
+    private TournamentStatus status = TournamentStatus.DRAFT;
 
     @Column(name = "created_at",nullable = false)
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

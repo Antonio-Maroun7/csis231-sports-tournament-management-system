@@ -15,6 +15,7 @@ public class Standing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "standing_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

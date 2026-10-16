@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.Length;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "venues")
@@ -40,5 +41,5 @@ public class Venue {
     private VenueStatus status = VenueStatus.PENDING;
 
     @Column(name = "created_at",nullable = false)
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
