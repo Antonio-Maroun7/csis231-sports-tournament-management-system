@@ -6,9 +6,11 @@ import com.antonio.sportstournament.mapper.UserMapper;
 import com.antonio.sportstournament.model.Role;
 import com.antonio.sportstournament.model.User;
 import com.antonio.sportstournament.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+@Service
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -29,6 +31,7 @@ public class AuthService {
         );
     }
 
+    @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request){
         User user = userRepository.findByEmailIgnoreCase(request.email().trim())
                 .orElseThrow(()-> new UnauthorizedException("Invalid email or password"));

@@ -8,11 +8,13 @@ import com.antonio.sportstournament.model.User;
 import com.antonio.sportstournament.repository.UserRepository;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+@Service
 public class UserService {
      private final UserRepository repository;
      private final UserMapper mapper;
