@@ -11,7 +11,7 @@ public record UserCreateRequest(
         @NotBlank @Size(max = 100)
         String name,
 
-        @NotBlank @Email  @Size(max = 225)
+        @NotBlank @Email  @Size(max = 255)
         String email,
 
         @NotBlank @Size(min = 6,max = 100)

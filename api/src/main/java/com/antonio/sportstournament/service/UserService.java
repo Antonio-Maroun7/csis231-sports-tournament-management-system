@@ -3,6 +3,7 @@ package com.antonio.sportstournament.service;
 import com.antonio.sportstournament.dto.UserCreateRequest;
 import com.antonio.sportstournament.dto.UserResponse;
 import com.antonio.sportstournament.exception.ConflictException;
+import com.antonio.sportstournament.exception.ResourceNotFoundException;
 import com.antonio.sportstournament.mapper.UserMapper;
 import com.antonio.sportstournament.model.User;
 import com.antonio.sportstournament.repository.UserRepository;
@@ -11,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ConcurrentModificationException;
+
 import java.util.List;
 
 @Service
@@ -63,6 +64,6 @@ public class UserService {
      */
     public User findEntity(Long id){
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User Not Found"+id));
+                .orElseThrow(() -> new ResourceNotFoundException("User Not Found"+id));
     }
 }

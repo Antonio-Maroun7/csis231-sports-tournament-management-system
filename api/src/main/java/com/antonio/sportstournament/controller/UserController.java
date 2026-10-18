@@ -3,6 +3,7 @@ package com.antonio.sportstournament.controller;
 import com.antonio.sportstournament.dto.UserCreateRequest;
 import com.antonio.sportstournament.dto.UserResponse;
 import com.antonio.sportstournament.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse create(UserCreateRequest request){
+    public UserResponse create(@Valid @RequestBody UserCreateRequest request){
          return service.create(request);
     }
 
