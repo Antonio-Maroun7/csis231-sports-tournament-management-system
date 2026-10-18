@@ -1,9 +1,7 @@
-package com.antonio.sportstournament.mapper;
+package com.antonio.sportstournament.user;
 
-import com.antonio.sportstournament.dto.LoginResponse;
-import com.antonio.sportstournament.dto.UserResponse;
-import com.antonio.sportstournament.model.Role;
-import com.antonio.sportstournament.model.User;
+import com.antonio.sportstournament.auth.dto.LoginResponse;
+import com.antonio.sportstournament.user.dto.UserResponse;
 import org.springframework.stereotype.Component;
 
 @Component

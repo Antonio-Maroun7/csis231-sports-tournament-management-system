@@ -1,6 +1,6 @@
-package com.antonio.sportstournament.dto;
+package com.antonio.sportstournament.user.dto;
 
-import com.antonio.sportstournament.model.Role;
+import com.antonio.sportstournament.user.Role;
 
 import java.time.LocalDateTime;
 

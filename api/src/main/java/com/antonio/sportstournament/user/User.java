@@ -1,4 +1,4 @@
-package com.antonio.sportstournament.model;
+package com.antonio.sportstournament.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;

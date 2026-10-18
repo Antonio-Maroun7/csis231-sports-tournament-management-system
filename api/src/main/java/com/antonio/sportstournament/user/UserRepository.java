@@ -1,6 +1,5 @@
-package com.antonio.sportstournament.repository;
+package com.antonio.sportstournament.user;
 
-import com.antonio.sportstournament.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

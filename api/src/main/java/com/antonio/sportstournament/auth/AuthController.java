@@ -1,10 +1,9 @@
-package com.antonio.sportstournament.controller;
+package com.antonio.sportstournament.auth;
 
-import com.antonio.sportstournament.dto.LoginRequest;
-import com.antonio.sportstournament.dto.LoginResponse;
-import com.antonio.sportstournament.dto.RegisterRequest;
-import com.antonio.sportstournament.dto.UserResponse;
-import com.antonio.sportstournament.service.AuthService;
+import com.antonio.sportstournament.auth.dto.LoginRequest;
+import com.antonio.sportstournament.auth.dto.LoginResponse;
+import com.antonio.sportstournament.auth.dto.RegisterRequest;
+import com.antonio.sportstournament.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

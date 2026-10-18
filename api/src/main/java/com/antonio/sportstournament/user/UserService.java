@@ -1,12 +1,9 @@
-package com.antonio.sportstournament.service;
+package com.antonio.sportstournament.user;
 
-import com.antonio.sportstournament.dto.UserCreateRequest;
-import com.antonio.sportstournament.dto.UserResponse;
 import com.antonio.sportstournament.exception.ConflictException;
 import com.antonio.sportstournament.exception.ResourceNotFoundException;
-import com.antonio.sportstournament.mapper.UserMapper;
-import com.antonio.sportstournament.model.User;
-import com.antonio.sportstournament.repository.UserRepository;
+import com.antonio.sportstournament.user.dto.UserCreateRequest;
+import com.antonio.sportstournament.user.dto.UserResponse;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

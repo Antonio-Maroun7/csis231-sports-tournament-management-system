@@ -1,11 +1,16 @@
-package com.antonio.sportstournament.service;
+package com.antonio.sportstournament.auth;
 
-import com.antonio.sportstournament.dto.*;
+import com.antonio.sportstournament.auth.dto.LoginRequest;
+import com.antonio.sportstournament.auth.dto.LoginResponse;
+import com.antonio.sportstournament.auth.dto.RegisterRequest;
 import com.antonio.sportstournament.exception.UnauthorizedException;
-import com.antonio.sportstournament.mapper.UserMapper;
-import com.antonio.sportstournament.model.Role;
-import com.antonio.sportstournament.model.User;
-import com.antonio.sportstournament.repository.UserRepository;
+import com.antonio.sportstournament.user.Role;
+import com.antonio.sportstournament.user.User;
+import com.antonio.sportstournament.user.UserMapper;
+import com.antonio.sportstournament.user.UserRepository;
+import com.antonio.sportstournament.user.UserService;
+import com.antonio.sportstournament.user.dto.UserCreateRequest;
+import com.antonio.sportstournament.user.dto.UserResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

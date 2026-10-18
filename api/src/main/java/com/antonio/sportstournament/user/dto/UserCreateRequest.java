@@ -1,6 +1,6 @@
-package com.antonio.sportstournament.dto;
+package com.antonio.sportstournament.user.dto;
 
-import com.antonio.sportstournament.model.Role;
+import com.antonio.sportstournament.user.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
