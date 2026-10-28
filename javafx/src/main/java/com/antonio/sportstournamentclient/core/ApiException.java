@@ -1,11 +1,19 @@
 package com.antonio.sportstournamentclient.core;
 
-/** Describes an HTTP failure returned by the tournament API. */
+/**
+ * Error returned by the API (or a network problem).
+ * status = HTTP status code (400, 401, 404, 409...), or 0 when the server could not be reached.
+ * The message is the server's "detail" text, ready to be shown to the user.
+ */
 public class ApiException extends RuntimeException {
     private final int status;
+
     public ApiException(int status, String message) {
-        super(status == 0 ? "Cannot reach the server. Is the API running on port 8081?" : message);
+        super(message);
         this.status = status;
     }
-    public int status() { return status; }
+
+    public int getStatus() {
+        return status;
+    }
 }

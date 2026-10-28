@@ -1,13 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.team.TeamDetailsController">
- <left><fx:include source="../core/sidebar.fxml"/></left><center><VBox spacing="16" styleClass="content">
-  <Label fx:id="title" text="Team details" styleClass="title"/><Separator/>
-  <GridPane hgap="18" vgap="14">
-   <Label text="Team ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/><Label fx:id="teamId" text="—" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-   <Label text="Manager" GridPane.rowIndex="1" GridPane.columnIndex="0"/><Label fx:id="manager" text="—" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-   <Label text="Manager ID" GridPane.rowIndex="2" GridPane.columnIndex="0"/><Label fx:id="managerId" text="—" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-   <Label text="Created" GridPane.rowIndex="3" GridPane.columnIndex="0"/><Label fx:id="created" text="—" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-  </GridPane><Label fx:id="status"/>
- </VBox></center>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Team Details View (proposal mockup 06) -->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.antonio.sportstournamentclient.team.TeamDetailsController">
+    <left>
+        <fx:include source="../core/sidebar.fxml"/>
+    </left>
+
+    <center>
+        <VBox styleClass="page" spacing="18">
+            <!-- header -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <VBox HBox.hgrow="ALWAYS">
+                    <Label text="Team Details" styleClass="page-title"/>
+                    <Label fx:id="subtitleLabel" styleClass="page-subtitle"/>
+                </VBox>
+                <Button text="Back to Teams" onAction="#handleBack" styleClass="secondary-button"/>
+            </HBox>
+
+            <!-- team information card -->
+            <VBox styleClass="card" spacing="16">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Team Information" styleClass="card-title" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    <Button fx:id="editButton" text="Edit Team" onAction="#handleEdit" styleClass="primary-button"/>
+                    <Button fx:id="deleteButton" text="Delete Team" onAction="#handleDelete" styleClass="danger-button"/>
+                </HBox>
+                <HBox spacing="70">
+                    <VBox spacing="6">
+                        <Label text="Team Name" styleClass="field-label"/>
+                        <Label fx:id="teamNameLabel" text="-" styleClass="field-value"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Manager" styleClass="field-label"/>
+                        <Label fx:id="managerLabel" text="-" styleClass="field-value"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Created" styleClass="field-label"/>
+                        <Label fx:id="createdLabel" text="-" styleClass="field-value"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- players: filled in Step 5 -->
+            <VBox styleClass="card" spacing="8">
+                <Label text="Players" styleClass="section-title"/>
+                <Label text="Players will be added in the next step." styleClass="page-subtitle"/>
+            </VBox>
+
+            <Label fx:id="messageLabel" wrapText="true"/>
+        </VBox>
+    </center>
 </BorderPane>

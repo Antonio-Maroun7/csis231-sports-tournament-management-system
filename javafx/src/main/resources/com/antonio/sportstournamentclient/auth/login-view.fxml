@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<VBox fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.auth.LoginController" alignment="CENTER" spacing="14" styleClass="auth">
- <Label text="Sports Tournament Management" styleClass="title"/>
- <TextField fx:id="email" promptText="Email" maxWidth="320"/>
- <PasswordField fx:id="password" promptText="Password" maxWidth="320"/>
- <Button text="Sign in" onAction="#login"/>
- <Hyperlink text="Create an account" onAction="#register"/>
- <Label fx:id="error"/>
-</VBox>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Login View (proposal mockup 01) -->
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.antonio.sportstournamentclient.auth.LoginController">
+
+    <!-- left: navy presentation panel (mockup 01) -->
+    <VBox styleClass="auth-hero" spacing="34" HBox.hgrow="ALWAYS" prefWidth="560">
+        <Label text="SPORTS&#10;TOURNAMENT&#10;MANAGEMENT" styleClass="auth-hero-title" wrapText="true"/>
+        <Label text="Manage tournaments, teams, venues, matches and standings from one desktop application."
+               styleClass="auth-hero-text" wrapText="true" maxWidth="440"/>
+        <VBox spacing="16">
+            <HBox spacing="16" alignment="CENTER_LEFT"><Label text="01" styleClass="auth-feature-number"/><Label text="Team management" styleClass="auth-feature"/></HBox>
+            <HBox spacing="16" alignment="CENTER_LEFT"><Label text="02" styleClass="auth-feature-number"/><Label text="Venue approval" styleClass="auth-feature"/></HBox>
+            <HBox spacing="16" alignment="CENTER_LEFT"><Label text="03" styleClass="auth-feature-number"/><Label text="Match scheduling" styleClass="auth-feature"/></HBox>
+            <HBox spacing="16" alignment="CENTER_LEFT"><Label text="04" styleClass="auth-feature-number"/><Label text="Live standings" styleClass="auth-feature"/></HBox>
+        </VBox>
+    </VBox>
+
+    <!-- right: login card -->
+    <StackPane styleClass="auth-side" HBox.hgrow="ALWAYS" prefWidth="620">
+        <VBox styleClass="auth-card" spacing="10" maxWidth="440" maxHeight="-Infinity">
+            <Label text="Welcome back" styleClass="auth-title"/>
+            <Label text="Sign in to continue" styleClass="page-subtitle"/>
+
+            <Label text="Email" styleClass="field-label">
+                <padding><Insets top="14"/></padding>
+            </Label>
+            <TextField fx:id="emailField" promptText="you@example.com"/>
+
+            <Label text="Password" styleClass="field-label"/>
+            <PasswordField fx:id="passwordField" promptText="Password" onAction="#handleLogin"/>
+
+            <Button fx:id="loginButton" text="Login" onAction="#handleLogin" defaultButton="true"
+                    styleClass="primary-button" maxWidth="Infinity">
+                <VBox.margin><Insets top="12"/></VBox.margin>
+            </Button>
+            <Button text="Clear" onAction="#handleClear" styleClass="secondary-button" maxWidth="Infinity"/>
+
+            <Label fx:id="messageLabel" wrapText="true"/>
+
+            <HBox alignment="CENTER" spacing="4">
+                <Label text="New here?" styleClass="page-subtitle"/>
+                <Hyperlink text="Create an account" onAction="#handleRegister" styleClass="link-button"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+</HBox>

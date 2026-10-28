@@ -1,4 +1,8 @@
 package com.antonio.sportstournamentclient.user.dto;
-/** Administrator user creation payload. */
-public record UserCreateRequest(String name, String email, String password, String role) {}
 
+/**
+ * Body of POST /api/users (Administrator creates any kind of account).
+ * role = ADMIN | ORGANIZER | TEAM_MANAGER
+ */
+public record UserCreateRequest(String name, String email, String password, String role) {
+}

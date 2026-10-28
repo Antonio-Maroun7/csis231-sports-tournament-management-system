@@ -1,51 +1,110 @@
 package com.antonio.sportstournamentclient.user;
 
-import com.antonio.sportstournamentclient.core.*;
-import com.antonio.sportstournamentclient.user.dto.*;
-import java.util.List;
+import com.antonio.sportstournamentclient.core.BackgroundTask;
+import com.antonio.sportstournamentclient.core.Formats;
+import com.antonio.sportstournamentclient.core.SceneManager;
+import com.antonio.sportstournamentclient.core.Session;
+import com.antonio.sportstournamentclient.core.Ui;
+import com.antonio.sportstournamentclient.user.dto.UserResponse;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 
-/** Full user administration screen with role, permissions, and account safety. */
-public final class UsersController {
-    @FXML private TableView<UserResponse> users;
-    @FXML private TableColumn<UserResponse,String> nameColumn,emailColumn,roleColumn,twoFactorColumn,dateColumn,idColumn;
-    @FXML private Label status;
-    private final ObservableList<UserResponse> items = FXCollections.observableArrayList();
+import java.io.IOException;
 
-    @FXML private void initialize() {
-        users.setItems(items);
+/**
+ * Users View (Administrator only): list all accounts, create an account with any role, delete an account.
+ */
+public class UsersController {
+    @FXML private TableView<UserResponse> userTable;
+    @FXML private TableColumn<UserResponse, String> nameColumn;
+    @FXML private TableColumn<UserResponse, String> emailColumn;
+    @FXML private TableColumn<UserResponse, String> roleColumn;
+    @FXML private TableColumn<UserResponse, String> twoFactorColumn;
+    @FXML private TableColumn<UserResponse, String> createdColumn;
+    @FXML private Button createButton;
+    @FXML private Button deleteButton;
+    @FXML private Label messageLabel;
+
+    @FXML
+    private void initialize() {
+        // guard: the sidebar hides this page, but never trust the client alone
+        if (!Session.isAdmin()) {
+            Ui.error(messageLabel, "Access denied - administrators only");
+            createButton.setDisable(true);
+            deleteButton.setDisable(true);
+            // leave the page after it is shown
+            Platform.runLater(this::goToDashboard);
+            return;
+        }
+
         nameColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().name()));
         emailColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().email()));
-        roleColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().role()));
-        twoFactorColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().twoFactorEnabled() ? "Enabled" : "Disabled"));
-        dateColumn.setCellValueFactory(c -> new SimpleStringProperty(Formats.dateTime(c.getValue().createdAt())));
-        idColumn.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().id())));
-        load();
+        roleColumn.setCellValueFactory(c -> new SimpleStringProperty(Formats.role(c.getValue().role())));
+        twoFactorColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().twoFactorEnabled() ? "Enabled" : "Off"));
+        createdColumn.setCellValueFactory(c -> new SimpleStringProperty(Formats.date(c.getValue().createdAt())));
+
+        // cannot delete without a selection, and never your own account
+        deleteButton.setDisable(true);
+        userTable.getSelectionModel().selectedItemProperty().addListener((obs, old, user) ->
+                deleteButton.setDisable(user == null || user.id().equals(Session.getCurrentUser().id())));
+
+        loadUsers();
     }
-    @FXML private void load() {
-        var task = BackgroundTask.run(UserApi::all);
-        task.setOnSucceeded(e -> { List<UserResponse> values = task.getValue(); items.setAll(values); status.setText(values.size() + " users"); });
-        task.setOnFailed(e -> Ui.error(status, task.getException(), "Unable to load users."));
+
+    @FXML
+    private void loadUsers() {
+        Ui.info(messageLabel, "Loading users...");
+        BackgroundTask.run(
+                UserApi::getAll,
+                users -> {
+                    userTable.getItems().setAll(users);
+                    Ui.info(messageLabel, users.size() + " users loaded");
+                },
+                error -> Ui.error(messageLabel, error));
     }
-    @FXML private void create() { editDialog(null); }
-    @FXML private void edit() { UserResponse u=users.getSelectionModel().getSelectedItem(); if(u==null) status.setText("Select a user."); else editDialog(u); }
-    @FXML private void permissions() { UserResponse u=users.getSelectionModel().getSelectedItem(); if(u==null) status.setText("Select a user."); else new Alert(Alert.AlertType.INFORMATION, "Role permissions for " + u.name() + ": " + u.role()).showAndWait(); }
-    @FXML private void delete() {
-        UserResponse u=users.getSelectionModel().getSelectedItem();
-        if(u==null){status.setText("Select a user.");return;}
-        if(Session.currentUser()!=null && Session.currentUser().id().equals(u.id())){status.setText("You cannot delete your own account.");return;}
-        new Alert(Alert.AlertType.CONFIRMATION,"Delete "+u.name()+"?",ButtonType.CANCEL,ButtonType.OK).showAndWait().filter(ButtonType.OK::equals).ifPresent(x->{var t=BackgroundTask.run(()->{UserApi.delete(u.id());return null;});t.setOnSucceeded(e->load());t.setOnFailed(e->Ui.error(status,t.getException(),"Unable to delete user."));});
+
+    @FXML
+    private void handleCreate() {
+        UserDialog.askNewUser().ifPresent(request ->
+                BackgroundTask.run(
+                        () -> UserApi.create(request),
+                        created -> {
+                            Ui.success(messageLabel, "Account created for " + created.email());
+                            loadUsers();
+                        },
+                        // e.g. 409 "An account with this email already exists"
+                        error -> Ui.error(messageLabel, error)));
     }
-    private void editDialog(UserResponse existing) {
-        TextField name=new TextField(existing==null?"":existing.name()), email=new TextField(existing==null?"":existing.email());
-        PasswordField password=new PasswordField(); ComboBox<String> role=new ComboBox<>(FXCollections.observableArrayList("USER","ORGANIZER","TEAM_MANAGER","ADMIN")); role.setValue(existing==null?"USER":existing.role());
-        CheckBox twoFactor=new CheckBox("Two-factor enabled"); if(existing!=null) twoFactor.setSelected(existing.twoFactorEnabled());
-        GridPane form=new GridPane();form.setHgap(10);form.setVgap(10);form.addRow(0,new Label("Name"),name);form.addRow(1,new Label("Email"),email);form.addRow(2,new Label("Password"),password);form.addRow(3,new Label("Role"),role);form.add(twoFactor,1,4);
-        Dialog<ButtonType> d=new Dialog<>();d.setTitle(existing==null?"Create user":"Edit user");d.getDialogPane().setContent(form);d.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL,ButtonType.OK);
-        d.showAndWait().filter(ButtonType.OK::equals).ifPresent(x->{if(name.getText().isBlank()||email.getText().isBlank()||(existing==null&&password.getText().isBlank())){status.setText("Name, email, and password are required.");return;} var request=new UserCreateRequest(name.getText(),email.getText(),password.getText(),role.getValue()); var t=BackgroundTask.run(()->existing==null?UserApi.create(request):UserApi.update(existing.id(),request));t.setOnSucceeded(e->load());t.setOnFailed(e->Ui.error(status,t.getException(),"Unable to save user."));});
+
+    @FXML
+    private void handleDelete() {
+        UserResponse user = userTable.getSelectionModel().getSelectedItem();
+        if (user == null || !Ui.confirm("Delete User", "Delete the account " + user.email() + "?")) {
+            return;
+        }
+        BackgroundTask.run(
+                () -> {
+                    UserApi.delete(user.id());
+                    return user;
+                },
+                deleted -> {
+                    Ui.success(messageLabel, "Account " + deleted.email() + " deleted");
+                    loadUsers();
+                },
+                // e.g. 409 when the user still manages a team
+                error -> Ui.error(messageLabel, error));
+    }
+
+    private void goToDashboard() {
+        try {
+            SceneManager.switchScene("dashboard/dashboard-view.fxml");
+        } catch (IOException e) {
+            Ui.error(messageLabel, "Could not open the Dashboard: " + e.getMessage());
+        }
     }
 }

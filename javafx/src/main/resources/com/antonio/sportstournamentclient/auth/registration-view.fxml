@@ -1,6 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<VBox fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.auth.RegistrationController" alignment="CENTER" spacing="14" styleClass="auth">
- <Label text="Create account" styleClass="title"/><TextField fx:id="name" promptText="Name" maxWidth="320"/><TextField fx:id="email" promptText="Email" maxWidth="320"/><PasswordField fx:id="password" promptText="Password (6+ characters)" maxWidth="320"/><PasswordField fx:id="confirmPassword" promptText="Confirm password" maxWidth="320"/><Button fx:id="registerButton" text="Register" onAction="#register"/><Hyperlink text="Back to sign in" onAction="#back"/><Label fx:id="error"/>
-</VBox>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Registration View: creates a Team Manager account -->
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.antonio.sportstournamentclient.auth.RegistrationController">
+
+    <!-- left: navy presentation panel (mockup 01) -->
+    <VBox styleClass="auth-hero" spacing="34" HBox.hgrow="ALWAYS" prefWidth="560">
+        <Label text="SPORTS&#10;TOURNAMENT&#10;MANAGEMENT" styleClass="auth-hero-title" wrapText="true"/>
+        <Label text="Manage tournaments, teams, venues, matches and standings from one desktop application."
+               styleClass="auth-hero-text" wrapText="true" maxWidth="440"/>
+        <VBox spacing="16">
+            <HBox spacing="16" alignment="CENTER_LEFT"><Label text="01" styleClass="auth-feature-number"/><Label text="Team management" styleClass="auth-feature"/></HBox>
+            <HBox spacing="16" alignment="CENTER_LEFT"><Label text="02" styleClass="auth-feature-number"/><Label text="Venue approval" styleClass="auth-feature"/></HBox>
+            <HBox spacing="16" alignment="CENTER_LEFT"><Label text="03" styleClass="auth-feature-number"/><Label text="Match scheduling" styleClass="auth-feature"/></HBox>
+            <HBox spacing="16" alignment="CENTER_LEFT"><Label text="04" styleClass="auth-feature-number"/><Label text="Live standings" styleClass="auth-feature"/></HBox>
+        </VBox>
+    </VBox>
+
+    <!-- right: registration card -->
+    <StackPane styleClass="auth-side" HBox.hgrow="ALWAYS" prefWidth="620">
+        <VBox styleClass="auth-card" spacing="8" maxWidth="440" maxHeight="-Infinity">
+            <Label text="Create an account" styleClass="auth-title"/>
+            <Label text="New accounts are Team Manager accounts" styleClass="page-subtitle"/>
+
+            <Label text="Full name" styleClass="field-label">
+                <padding><Insets top="10"/></padding>
+            </Label>
+            <TextField fx:id="nameField" promptText="Antonio Maroun"/>
+
+            <Label text="Email" styleClass="field-label"/>
+            <TextField fx:id="emailField" promptText="you@example.com"/>
+
+            <Label text="Password" styleClass="field-label"/>
+            <PasswordField fx:id="passwordField" promptText="At least 6 characters"/>
+
+            <Label text="Confirm password" styleClass="field-label"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Repeat the password" onAction="#handleRegistration"/>
+
+            <Button fx:id="registerButton" text="Register" onAction="#handleRegistration" defaultButton="true"
+                    styleClass="primary-button" maxWidth="Infinity">
+                <VBox.margin><Insets top="12"/></VBox.margin>
+            </Button>
+
+            <Label fx:id="messageLabel" wrapText="true"/>
+
+            <HBox alignment="CENTER" spacing="4">
+                <Label text="Already have an account?" styleClass="page-subtitle"/>
+                <Hyperlink text="Log in" onAction="#handleLogin" styleClass="link-button"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+</HBox>

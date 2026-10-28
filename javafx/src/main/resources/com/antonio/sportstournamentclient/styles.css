@@ -1,4 +1,245 @@
-.root { -fx-font-family: "Segoe UI", Arial, sans-serif; -fx-font-size: 14px; }
-button { -fx-background-color: #2563eb; -fx-text-fill: white; -fx-background-radius: 5px; -fx-padding: 8px 16px; }
-button:hover { -fx-background-color: #1d4ed8; }
-text-field, password-field { -fx-padding: 10px; }
+/*
+ * Shared stylesheet of the client (attached once to the Scene by SceneManager).
+ * Colours follow the proposal mockups: navy sidebar, light grey page, white cards, blue actions.
+ */
+.root {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 14px;
+    -navy: #11283f;
+    -blue: #1f6feb;
+    -blue-dark: #1859c4;
+    -page: #f4f6fa;
+    -border: #dfe5ee;
+    -muted: #5f7189;
+    -text: #1d2733;
+}
+
+/* ---------- sidebar ---------- */
+.sidebar {
+    -fx-background-color: -navy;
+    -fx-padding: 28 18 22 18;
+}
+.sidebar-brand {
+    -fx-padding: 0 0 26 10;
+}
+.brand-title {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+.brand-subtitle {
+    -fx-text-fill: #b8c7da;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #dbe5f1;
+    -fx-font-size: 15px;
+    -fx-alignment: center-left;
+    -fx-padding: 10 16 10 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.nav-button:hover {
+    -fx-background-color: #1c3a59;
+}
+.nav-button.active {
+    -fx-background-color: -blue;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.sidebar-user {
+    -fx-padding: 14 6 12 6;
+    -fx-border-color: #2d4763 transparent transparent transparent;
+    -fx-alignment: center-left;
+}
+.avatar {
+    -fx-background-color: -blue;
+    -fx-background-radius: 20;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-alignment: center;
+}
+.user-name {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.user-role {
+    -fx-text-fill: #9fb2c8;
+    -fx-font-size: 12px;
+}
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #3a5878;
+    -fx-border-radius: 8;
+    -fx-text-fill: #dbe5f1;
+    -fx-cursor: hand;
+}
+
+/* ---------- page ---------- */
+.page {
+    -fx-background-color: -page;
+    -fx-padding: 26 34 26 34;
+}
+.page-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text;
+}
+.page-subtitle {
+    -fx-text-fill: -muted;
+}
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: -border;
+    -fx-border-radius: 12;
+    -fx-padding: 20;
+}
+.card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text;
+}
+.field-label {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+.field-value {
+    -fx-text-fill: -text;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+.stat-value {
+    -fx-text-fill: -text;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text;
+}
+
+/* ---------- buttons ---------- */
+.primary-button {
+    -fx-background-color: -blue;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 9 18 9 18;
+    -fx-cursor: hand;
+}
+.primary-button:hover {
+    -fx-background-color: -blue-dark;
+}
+.secondary-button {
+    -fx-background-color: white;
+    -fx-border-color: -border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-text-fill: -text;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+}
+.danger-button {
+    -fx-background-color: #d64545;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 9 18 9 18;
+    -fx-cursor: hand;
+}
+.link-button {
+    -fx-text-fill: -blue;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+}
+
+/* ---------- forms ---------- */
+.text-field, .password-field, .combo-box {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: -border;
+    -fx-background-color: white;
+    -fx-padding: 8 10 8 10;
+}
+
+/* ---------- tables ---------- */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: -border;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+.table-view .column-header {
+    -fx-background-color: #eef2f7;
+}
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: -text;
+    -fx-alignment: center-left;
+}
+.table-row-cell {
+    -fx-cell-size: 40;
+}
+
+/* ---------- messages ---------- */
+.message-info {
+    -fx-text-fill: -muted;
+}
+.message-success {
+    -fx-text-fill: #17914a;
+}
+.message-error {
+    -fx-text-fill: #d64545;
+    -fx-font-weight: bold;
+}
+
+/* ---------- login / register ---------- */
+.auth-hero {
+    -fx-background-color: -navy;
+    -fx-padding: 70 60 70 60;
+}
+.auth-hero-title {
+    -fx-text-fill: white;
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+}
+.auth-hero-text {
+    -fx-text-fill: #c9d6e6;
+    -fx-font-size: 17px;
+}
+.auth-feature {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+.auth-feature-number {
+    -fx-background-color: -blue;
+    -fx-background-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-width: 40;
+    -fx-min-height: 36;
+    -fx-alignment: center;
+}
+.auth-side {
+    -fx-background-color: #edf2fa;
+}
+.auth-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: -border;
+    -fx-border-radius: 14;
+    -fx-padding: 40 44 34 44;
+}
+.auth-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text;
+}

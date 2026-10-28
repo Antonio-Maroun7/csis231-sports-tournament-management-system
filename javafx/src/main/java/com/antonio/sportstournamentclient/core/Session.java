@@ -1,63 +1,30 @@
 package com.antonio.sportstournamentclient.core;
 
 import com.antonio.sportstournamentclient.auth.dto.LoginResponse;
-import com.antonio.sportstournamentclient.user.dto.UserResponse;
 
-/** Stores the authenticated user for the current application session. */
-public final class Session {
+/**
+ * Who is logged in, plus small values passed between screens (same role as the instructor's Session).
+ */
+public class Session {
     private static LoginResponse currentUser;
+
+    // team chosen in the Teams view, shown by the Team Details view
     private static Long selectedTeamId;
 
-    private Session() {
-    }
-
-    public static LoginResponse currentUser() {
-        return currentUser;
+    public static void setCurrentUser(LoginResponse user) {
+        currentUser = user;
     }
 
     public static LoginResponse getCurrentUser() {
         return currentUser;
     }
 
-    public static void setCurrentUser(LoginResponse user) {
-        currentUser = user;
-    }
-
-    public static void setCurrentUser(UserResponse user) {
-        currentUser = new LoginResponse(user.id(), user.name(), user.email(), user.role(),
-                user.twoFactorEnabled());
-    }
-
-    public static boolean isAuthenticated() {
-        return currentUser != null;
-    }
-
-    public static boolean isAdmin() {
-        return isAuthenticated() && "ADMIN".equals(currentUser.role());
-    }
-
-    public static boolean isTeamManager() {
-        return isAuthenticated() && "TEAM_MANAGER".equals(currentUser.role());
-    }
-
-    public static boolean isOrganizer() {
-        return isAuthenticated() && "ORGANIZER".equals(currentUser.role());
-    }
-
-    public static boolean canCreateTeams() {
-        return isAdmin() || isTeamManager();
-    }
-
-    public static boolean canManageTeam(Long managerId) {
-        return isAdmin() || (isTeamManager() && currentUser.id().equals(managerId));
-    }
-
     public static Long getSelectedTeamId() {
         return selectedTeamId;
     }
 
-    public static void setSelectedTeamId(Long id) {
-        selectedTeamId = id;
+    public static void setSelectedTeamId(Long teamId) {
+        selectedTeamId = teamId;
     }
 
     public static void clear() {
@@ -65,7 +32,31 @@ public final class Session {
         selectedTeamId = null;
     }
 
-    public static void logout() {
-        clear();
+    // -------- role helpers (the server still enforces its own rules) --------
+
+    public static boolean hasRole(String role) {
+        return currentUser != null && role.equals(currentUser.role());
+    }
+
+    public static boolean isAdmin() {
+        return hasRole("ADMIN");
+    }
+
+    public static boolean isTeamManager() {
+        return hasRole("TEAM_MANAGER");
+    }
+
+    public static boolean isOrganizer() {
+        return hasRole("ORGANIZER");
+    }
+
+    /** Only Team Managers and Administrators may create teams (server rule). */
+    public static boolean canCreateTeams() {
+        return isTeamManager() || isAdmin();
+    }
+
+    /** A team can be edited/deleted by its own manager or by an Administrator. */
+    public static boolean canManageTeam(Long managerId) {
+        return isAdmin() || (isTeamManager() && currentUser.id().equals(managerId));
     }
 }

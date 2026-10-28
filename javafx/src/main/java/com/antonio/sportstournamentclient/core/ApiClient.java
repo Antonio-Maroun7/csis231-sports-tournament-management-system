@@ -6,110 +6,126 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpConnectTimeoutException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-/** Synchronous, typed HTTP client used by the feature APIs. */
-public final class ApiClient {
+/**
+ * Generic HTTP + JSON helpers shared by every feature (based on the instructor's ApiClient).
+ *
+ * The endpoint methods live in each feature (AuthApi, TeamApi, UserApi) and call these helpers.
+ * All methods are BLOCKING: always call them from a background Task, never on the UI thread.
+ */
+public class ApiClient {
     public static final String BASE_URL = "http://localhost:8081/api";
-    private static final Duration TIMEOUT = Duration.ofSeconds(5);
-    private static final ObjectMapper MAPPER = new ObjectMapper()
+
+    private static final HttpClient http = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(5))
+            .build();
+
+    private static final ObjectMapper mapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    private static final HttpClient HTTP = HttpClient.newBuilder().connectTimeout(TIMEOUT).build();
 
-    private ApiClient() {
-    }
-
-    public static <T> T get(String path, Class<T> type) {
-        return request("GET", path, null, type);
-    }
+    // -------- Generic helpers --------
 
     public static <T> T get(String path, TypeReference<T> type) {
-        return request("GET", path, null, type);
+        HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + path))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+        return read(send(request), type);
     }
 
-    public static <T> T post(String path, Object body, Class<T> type) {
-        return request("POST", path, body, type);
+    public static <T> T post(String path, Object payload, Class<T> type) {
+        HttpRequest request = jsonRequest(path)
+                .POST(HttpRequest.BodyPublishers.ofString(write(payload)))
+                .build();
+        return read(send(request), type);
     }
 
-    public static <T> T post(String path, Object body, TypeReference<T> type) {
-        return request("POST", path, body, type);
-    }
-
-    public static <T> T put(String path, Object body, Class<T> type) {
-        return request("PUT", path, body, type);
-    }
-
-    public static <T> T put(String path, Object body, TypeReference<T> type) {
-        return request("PUT", path, body, type);
+    public static <T> T put(String path, Object payload, Class<T> type) {
+        HttpRequest request = jsonRequest(path)
+                .PUT(HttpRequest.BodyPublishers.ofString(write(payload)))
+                .build();
+        return read(send(request), type);
     }
 
     public static void delete(String path) {
-        request("DELETE", path, null, Void.class);
+        HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + path))
+                .DELETE()
+                .build();
+        send(request);
     }
 
-    public static <T> T request(String method, String path, Object body, Class<T> type) {
-        return execute(method, path, body, response -> response.body().isBlank()
-                ? null : MAPPER.readValue(response.body(), type));
+    // -------- Internals --------
+
+    private static HttpRequest.Builder jsonRequest(String path) {
+        return HttpRequest.newBuilder(URI.create(BASE_URL + path))
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json");
     }
 
-    public static <T> T request(String method, String path, Object body, TypeReference<T> type) {
-        return execute(method, path, body, response -> response.body().isBlank()
-                ? null : MAPPER.readValue(response.body(), type));
-    }
-
-    private static <T> T execute(String method, String path, Object body, Parser<T> parser) {
+    /** Sends the request; returns the body for 2xx, otherwise throws ApiException with the server's message. */
+    private static String send(HttpRequest request) {
         try {
-            HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(BASE_URL + path))
-                    .timeout(TIMEOUT)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json");
-            builder.method(method, body == null ? HttpRequest.BodyPublishers.noBody()
-                    : HttpRequest.BodyPublishers.ofString(MAPPER.writeValueAsString(body)));
-            HttpResponse<String> response = HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw problem(response);
+            HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+            int status = response.statusCode();
+            if (status >= 200 && status < 300) {
+                return response.body();
             }
-            return parser.parse(response);
-        } catch (ApiException exception) {
-            throw exception;
-        } catch (ConnectException | java.net.http.HttpTimeoutException exception) {
+            throw new ApiException(status, extractErrorMessage(response.body(), status));
+        } catch (ConnectException | HttpConnectTimeoutException e) {
             throw new ApiException(0, "Cannot reach the server. Is the API running on port 8081?");
-        } catch (IOException exception) {
-            if (exception.getCause() instanceof ConnectException) {
-                throw new ApiException(0, "Cannot reach the server. Is the API running on port 8081?");
-            }
-            throw new IllegalStateException("Request failed", exception);
-        } catch (InterruptedException exception) {
+        } catch (IOException e) {
+            throw new ApiException(0, "Network error: " + e.getMessage());
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("Request interrupted", exception);
-        } catch (Exception exception) {
-            throw new IllegalStateException("Unable to process API response", exception);
+            throw new ApiException(0, "Request interrupted");
         }
     }
 
-    private static ApiException problem(HttpResponse<String> response) {
-        String message = response.body();
+    /** The API returns errors as ProblemDetail JSON: {"status":409,"detail":"..."} - keep the "detail". */
+    private static String extractErrorMessage(String body, int status) {
         try {
-            JsonNode detail = MAPPER.readTree(response.body()).get("detail");
-            if (detail != null && !detail.asText().isBlank()) {
-                message = detail.asText();
+            JsonNode node = mapper.readTree(body);
+            if (node != null && node.hasNonNull("detail")) {
+                return node.get("detail").asText();
             }
-        } catch (Exception ignored) {
-            // Preserve the raw response when it is not JSON.
+        } catch (IOException ignored) {
+            // not JSON: fall through to the generic message
         }
-        return new ApiException(response.statusCode(), message);
+        return "Server error (status " + status + ")";
     }
 
-    @FunctionalInterface
-    private interface Parser<T> {
-        T parse(HttpResponse<String> response) throws Exception;
+    private static String write(Object payload) {
+        try {
+            return mapper.writeValueAsString(payload);
+        } catch (IOException e) {
+            throw new ApiException(0, "Could not create request: " + e.getMessage());
+        }
+    }
+
+    private static <T> T read(String body, TypeReference<T> type) {
+        try {
+            return mapper.readValue(body, type);
+        } catch (IOException e) {
+            throw new ApiException(0, "Could not read server response: " + e.getMessage());
+        }
+    }
+
+    private static <T> T read(String body, Class<T> type) {
+        try {
+            return mapper.readValue(body, type);
+        } catch (IOException e) {
+            throw new ApiException(0, "Could not read server response: " + e.getMessage());
+        }
     }
 }
