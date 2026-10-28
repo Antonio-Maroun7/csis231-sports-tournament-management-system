@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.auth.LoginController" alignment="CENTER" spacing="14" styleClass="auth">
+ <Label text="Sports Tournament Management" styleClass="title"/>
+ <TextField fx:id="email" promptText="Email" maxWidth="320"/>
+ <PasswordField fx:id="password" promptText="Password" maxWidth="320"/>
+ <Button text="Sign in" onAction="#login"/>
+ <Hyperlink text="Create an account" onAction="#register"/>
+ <Label fx:id="error"/>
+</VBox>

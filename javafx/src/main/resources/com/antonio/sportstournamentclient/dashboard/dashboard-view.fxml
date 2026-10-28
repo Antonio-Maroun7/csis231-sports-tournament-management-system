@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<BorderPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.dashboard.DashboardController">
+ <left><fx:include source="../core/sidebar.fxml"/></left><center><VBox spacing="16" styleClass="content"><Label text="Dashboard" styleClass="title"/><Label text="Welcome to your tournament workspace."/><Button text="Manage teams" onAction="#teams"/><Button text="Manage users" onAction="#users"/></VBox></center>
+</BorderPane>

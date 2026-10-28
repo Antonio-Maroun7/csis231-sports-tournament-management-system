@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.core.layout.SidebarController" spacing="10" styleClass="sidebar">
+ <Label text="SPORTS TOURNAMENT" styleClass="sidebar-title"/><Button text="Dashboard" onAction="#dashboard"/><Button text="Teams" onAction="#teams"/><Button text="Users" onAction="#users"/><Region VBox.vgrow="ALWAYS"/><Button text="Sign out" onAction="#logout"/>
+</VBox>

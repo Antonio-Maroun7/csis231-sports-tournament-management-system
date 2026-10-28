@@ -1,9 +1,5 @@
 package com.antonio.sportstournamentclient;
 
-import javafx.application.Application;
+/** Non-Application launcher for modular JavaFX runtimes. */
+public final class Launcher { public static void main(String[] args) { SportsTournamentApp.main(args); } }
 
-public class Launcher {
-    public static void main(String[] args) {
-        Application.launch(HelloApplication.class, args);
-    }
-}
