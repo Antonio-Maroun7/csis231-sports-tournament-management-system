@@ -77,7 +77,7 @@ public class TeamsController {
                 () -> onlyMine ? TeamApi.getByManager(me) : TeamApi.getAll(),
                 teams -> {
                     teamTable.getItems().setAll(teams);
-                    Ui.info(messageLabel, teams.size() + " teams loaded");
+                    Ui.info(messageLabel, teams.size() + (teams.size() == 1 ? " team loaded" : " teams loaded"));;
                 },
                 error -> Ui.error(messageLabel, error));
     }

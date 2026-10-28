@@ -243,3 +243,17 @@
     -fx-font-weight: bold;
     -fx-text-fill: -text;
 }
+
+    /* center table text vertically and give it some left padding (mockup 05) */
+    .table-row-cell .table-cell {
+        -fx-alignment: center-left;
+        -fx-padding: 0 0 0 12;
+    }
+    .table-view .column-header .label {
+        -fx-padding: 0 0 0 8;
+    }
+    /* disabled buttons: grey instead of faded red/blue */
+    .button:disabled {
+        -fx-opacity: 0.45;
+    }
+

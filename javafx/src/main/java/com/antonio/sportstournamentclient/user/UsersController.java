@@ -63,7 +63,7 @@ public class UsersController {
                 UserApi::getAll,
                 users -> {
                     userTable.getItems().setAll(users);
-                    Ui.info(messageLabel, users.size() + " users loaded");
+                    Ui.info(messageLabel, users.size() + (users.size() == 1 ? " user loaded" : " users loaded"));
                 },
                 error -> Ui.error(messageLabel, error));
     }
