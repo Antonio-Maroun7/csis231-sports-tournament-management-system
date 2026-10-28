@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * Team Details View (mockup 06): information about the team chosen in the Teams View
  * (Session.selectedTeamId), with Edit / Delete for its manager or an Admin.
- * The players section is filled in Step 5 (players API).
+ * The players section is the roster panel of the player feature (player/roster-panel.fxml).
  */
 public class TeamDetailsController {
     @FXML private Label subtitleLabel;

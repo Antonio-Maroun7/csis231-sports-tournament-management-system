@@ -47,11 +47,8 @@
                 </HBox>
             </VBox>
 
-            <!-- players: filled in Step 5 -->
-            <VBox styleClass="card" spacing="8">
-                <Label text="Players" styleClass="section-title"/>
-                <Label text="Players will be added in the next step." styleClass="page-subtitle"/>
-            </VBox>
+            <!-- players: roster panel from the player feature (team never depends on player in Java) -->
+            <fx:include source="../player/roster-panel.fxml"/>
 
             <Label fx:id="messageLabel" wrapText="true"/>
         </VBox>
