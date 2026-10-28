@@ -1,6 +1,7 @@
 package com.antonio.sportstournament.model;
 
 import com.antonio.sportstournament.team.Team;
+import com.antonio.sportstournament.tournament.Tournament;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
