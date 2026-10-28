@@ -1,4 +1,0 @@
-.root { -fx-font-family: "Segoe UI", Arial; -fx-font-size: 14px; -fx-background-color: #f5f7fb; }
-.auth { -fx-padding: 70px; } .title { -fx-font-size: 28px; -fx-font-weight: bold; }
-.content { -fx-padding: 32px; } .sidebar { -fx-padding: 24px; -fx-pref-width: 210px; -fx-background-color: #172554; }
-.sidebar .button { -fx-max-width: 180px; } .sidebar-title { -fx-text-fill: white; -fx-font-weight: bold; }

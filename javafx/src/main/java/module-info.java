@@ -2,8 +2,11 @@ module com.antonio.sportstournamentclient {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.net.http;
+    requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.datatype.jsr310;
+    requires org.controlsfx.controls;
+    requires org.kordamp.bootstrapfx.core;
 
     opens com.antonio.sportstournamentclient to javafx.fxml;
     opens com.antonio.sportstournamentclient.core to javafx.fxml;
@@ -22,4 +25,3 @@ module com.antonio.sportstournamentclient {
     exports com.antonio.sportstournamentclient.team;
     exports com.antonio.sportstournamentclient.user;
 }
-

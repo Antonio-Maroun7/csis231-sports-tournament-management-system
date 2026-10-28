@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
-<BorderPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.dashboard.DashboardController">
- <left><fx:include source="../core/sidebar.fxml"/></left><center><VBox spacing="16" styleClass="content"><Label text="Dashboard" styleClass="title"/><Label text="Welcome to your tournament workspace."/><Button text="Manage teams" onAction="#teams"/><Button text="Manage users" onAction="#users"/></VBox></center>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.dashboard.DashboardController">
+ <left><fx:include source="../core/sidebar.fxml"/></left><center><VBox spacing="20" styleClass="content">
+  <Label text="Tournament dashboard" styleClass="title"/><Label text="Operational overview and quick access to tournament administration."/>
+  <HBox spacing="18">
+   <VBox styleClass="card" spacing="8" prefWidth="240"><Label text="Teams" styleClass="subtitle"/><Label fx:id="teamsCount" text="…" styleClass="title"/><Button text="View teams" onAction="#teams"/></VBox>
+   <VBox styleClass="card" spacing="8" prefWidth="240"><Label text="Users" styleClass="subtitle"/><Label fx:id="usersCount" text="…" styleClass="title"/><Button text="View users" onAction="#users"/></VBox>
+  </HBox>
+  <Label text="Quick actions" styleClass="subtitle"/><HBox spacing="12"><Button text="Create or edit teams" onAction="#teams" prefWidth="190" prefHeight="44"/><Button text="Manage users and permissions" onAction="#users" prefWidth="220" prefHeight="44"/></HBox>
+  <Label fx:id="status"/>
+ </VBox></center>
 </BorderPane>

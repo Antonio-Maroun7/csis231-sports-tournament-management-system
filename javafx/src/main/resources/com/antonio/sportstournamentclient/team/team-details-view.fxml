@@ -1,3 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.team.TeamDetailsController"><center><VBox styleClass="content"><Label fx:id="title" text="Team details" styleClass="title"/></VBox></center></BorderPane>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.team.TeamDetailsController">
+ <left><fx:include source="../core/sidebar.fxml"/></left><center><VBox spacing="16" styleClass="content">
+  <Label fx:id="title" text="Team details" styleClass="title"/><Separator/>
+  <GridPane hgap="18" vgap="14">
+   <Label text="Team ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/><Label fx:id="teamId" text="—" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+   <Label text="Manager" GridPane.rowIndex="1" GridPane.columnIndex="0"/><Label fx:id="manager" text="—" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+   <Label text="Manager ID" GridPane.rowIndex="2" GridPane.columnIndex="0"/><Label fx:id="managerId" text="—" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+   <Label text="Created" GridPane.rowIndex="3" GridPane.columnIndex="0"/><Label fx:id="created" text="—" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+  </GridPane><Label fx:id="status"/>
+ </VBox></center>
+</BorderPane>

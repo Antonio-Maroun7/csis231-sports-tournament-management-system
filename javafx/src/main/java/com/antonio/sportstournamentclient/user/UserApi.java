@@ -1,5 +1,30 @@
 package com.antonio.sportstournamentclient.user;
-import com.antonio.sportstournamentclient.core.ApiClient; import com.antonio.sportstournamentclient.user.dto.*; import java.util.concurrent.CompletableFuture;
-/** User administration API. */
-public final class UserApi {private UserApi(){} public static CompletableFuture<UserResponse[]> all(){return ApiClient.get("/users",new com.fasterxml.jackson.core.type.TypeReference<UserResponse[]>(){});} public static CompletableFuture<UserResponse> create(UserCreateRequest r){return ApiClient.post("/users",r,UserResponse.class);} public static CompletableFuture<Void> delete(long id){return ApiClient.delete("/users/"+id);}}
 
+import com.antonio.sportstournamentclient.core.ApiClient;
+import com.antonio.sportstournamentclient.user.dto.UserCreateRequest;
+import com.antonio.sportstournamentclient.user.dto.UserResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.List;
+
+/** User administration API operations. */
+public final class UserApi {
+    private UserApi() {
+    }
+
+    public static List<UserResponse> all() {
+        return ApiClient.get("/users", new TypeReference<List<UserResponse>>() {
+        });
+    }
+
+    public static UserResponse create(UserCreateRequest request) {
+        return ApiClient.post("/users", request, UserResponse.class);
+    }
+
+    public static UserResponse update(long id, UserCreateRequest request) {
+        return ApiClient.put("/users/" + id, request, UserResponse.class);
+    }
+
+    public static void delete(long id) {
+        ApiClient.delete("/users/" + id);
+    }
+}

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
-<BorderPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.user.UsersController">
- <left><fx:include source="../core/sidebar.fxml"/></left><center><VBox spacing="16" styleClass="content"><Label text="Users" styleClass="title"/><Button text="Refresh" onAction="#load"/><Label fx:id="status" text="Select refresh to load users."/></VBox></center>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.antonio.sportstournamentclient.user.UsersController">
+ <left><fx:include source="../core/sidebar.fxml"/></left><center><VBox spacing="12" styleClass="content">
+  <Label text="Users" styleClass="title"/><Label text="Manage accounts, roles, permissions, two-factor security, and dates."/>
+  <HBox spacing="8"><Button text="Create user" onAction="#create"/><Button text="Edit selected" onAction="#edit"/><Button text="Permissions" onAction="#permissions"/><Button text="Delete" onAction="#delete"/><Button text="Refresh" onAction="#load"/><Label fx:id="status"/></HBox>
+  <TableView fx:id="users" VBox.vgrow="ALWAYS"><columns>
+   <TableColumn fx:id="nameColumn" text="Name" prefWidth="180"/><TableColumn fx:id="emailColumn" text="Email" prefWidth="250"/><TableColumn fx:id="roleColumn" text="Role" prefWidth="140"/><TableColumn fx:id="twoFactorColumn" text="2FA" prefWidth="100"/><TableColumn fx:id="dateColumn" text="Created" prefWidth="210"/><TableColumn fx:id="idColumn" text="ID" prefWidth="80"/>
+  </columns></TableView>
+ </VBox></center>
 </BorderPane>
