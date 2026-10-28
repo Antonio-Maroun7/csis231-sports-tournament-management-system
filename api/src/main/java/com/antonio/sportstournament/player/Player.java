@@ -1,4 +1,4 @@
-package com.antonio.sportstournament.model;
+package com.antonio.sportstournament.player;
 
 import com.antonio.sportstournament.team.Team;
 import jakarta.persistence.*;
