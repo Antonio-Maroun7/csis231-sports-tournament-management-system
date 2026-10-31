@@ -22,12 +22,14 @@ module com.antonio.sportstournamentclient {
     opens com.antonio.sportstournamentclient.dashboard to javafx.fxml;
     opens com.antonio.sportstournamentclient.team to javafx.fxml;
     opens com.antonio.sportstournamentclient.player to javafx.fxml;
+    opens com.antonio.sportstournamentclient.tournament to javafx.fxml;
     opens com.antonio.sportstournamentclient.user to javafx.fxml;
 
     // request / response records read and written by Jackson
     opens com.antonio.sportstournamentclient.auth.dto to com.fasterxml.jackson.databind;
     opens com.antonio.sportstournamentclient.team.dto to com.fasterxml.jackson.databind;
     opens com.antonio.sportstournamentclient.player.dto to com.fasterxml.jackson.databind;
+    opens com.antonio.sportstournamentclient.tournament.dto to com.fasterxml.jackson.databind;
     opens com.antonio.sportstournamentclient.user.dto to com.fasterxml.jackson.databind;
 
     exports com.antonio.sportstournamentclient;

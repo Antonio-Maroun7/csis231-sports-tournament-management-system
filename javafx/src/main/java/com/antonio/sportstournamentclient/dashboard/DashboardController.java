@@ -9,6 +9,8 @@ import com.antonio.sportstournamentclient.core.Ui;
 import com.antonio.sportstournamentclient.team.TeamApi;
 import com.antonio.sportstournamentclient.team.TeamDialog;
 import com.antonio.sportstournamentclient.team.dto.TeamRequest;
+import com.antonio.sportstournamentclient.tournament.TournamentApi;
+import com.antonio.sportstournamentclient.tournament.TournamentStatuses;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,6 +24,7 @@ public class DashboardController {
     @FXML private Label welcomeLabel;
     @FXML private Label teamsTitleLabel;
     @FXML private Label teamsCountLabel;
+    @FXML private Label tournamentsCountLabel;
     @FXML private Label roleLabel;
     @FXML private Label emailLabel;
     @FXML private Button createTeamButton;
@@ -48,6 +51,22 @@ public class DashboardController {
 
         teamsTitleLabel.setText(Session.isTeamManager() ? "My Teams" : "Teams");
         loadTeamCount();
+        loadActiveTournamentCount();
+    }
+
+    /** "Active" = OPEN for registration or IN_PROGRESS. */
+    private void loadActiveTournamentCount() {
+        tournamentsCountLabel.setText("...");
+        BackgroundTask.run(
+                () -> TournamentApi.getAll().stream()
+                        .filter(t -> TournamentStatuses.OPEN.equals(t.status())
+                                || TournamentStatuses.IN_PROGRESS.equals(t.status()))
+                        .count(),
+                count -> tournamentsCountLabel.setText(String.valueOf(count)),
+                error -> {
+                    tournamentsCountLabel.setText("-");
+                    Ui.error(messageLabel, error);
+                });
     }
 
     private void loadTeamCount() {
@@ -80,6 +99,11 @@ public class DashboardController {
     @FXML
     private void handleViewTeams() throws IOException {
         SceneManager.switchScene("team/teams-view.fxml");
+    }
+
+    @FXML
+    private void handleTournaments() throws IOException {
+        SceneManager.switchScene("tournament/tournaments-view.fxml");
     }
 
     @FXML

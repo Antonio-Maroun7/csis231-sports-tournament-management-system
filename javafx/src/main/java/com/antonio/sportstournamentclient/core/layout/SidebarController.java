@@ -18,6 +18,7 @@ public class SidebarController {
     @FXML private Button dashboardButton;
     @FXML private Button teamsButton;
     @FXML private Button playersButton;
+    @FXML private Button tournamentsButton;
     @FXML private Button usersButton;
     @FXML private Label avatarLabel;
     @FXML private Label userNameLabel;
@@ -51,6 +52,8 @@ public class SidebarController {
             teamsButton.getStyleClass().add("active");
         } else if (view.startsWith("player/")) {
             playersButton.getStyleClass().add("active");
+        } else if (view.startsWith("tournament/")) {
+            tournamentsButton.getStyleClass().add("active");
         } else if (view.startsWith("user/")) {
             usersButton.getStyleClass().add("active");
         }
@@ -69,6 +72,11 @@ public class SidebarController {
     @FXML
     private void handlePlayers() throws IOException {
         SceneManager.switchScene("player/players-view.fxml");
+    }
+
+    @FXML
+    private void handleTournaments() throws IOException {
+        SceneManager.switchScene("tournament/tournaments-view.fxml");
     }
 
     @FXML

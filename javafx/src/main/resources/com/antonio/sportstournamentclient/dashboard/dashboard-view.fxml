@@ -27,6 +27,10 @@
                     <Label fx:id="teamsCountLabel" text="-" styleClass="stat-value"/>
                 </VBox>
                 <VBox styleClass="card" spacing="10" prefWidth="250">
+                    <Label text="Active Tournaments" styleClass="field-label"/>
+                    <Label fx:id="tournamentsCountLabel" text="-" styleClass="stat-value"/>
+                </VBox>
+                <VBox styleClass="card" spacing="10" prefWidth="250">
                     <Label text="Role" styleClass="field-label"/>
                     <Label fx:id="roleLabel" styleClass="stat-value"/>
                 </VBox>
@@ -42,6 +46,7 @@
                 <Button fx:id="createTeamButton" text="+ Create Team" onAction="#handleCreateTeam"
                         styleClass="primary-button" maxWidth="Infinity"/>
                 <Button text="View Teams" onAction="#handleViewTeams" styleClass="secondary-button" maxWidth="Infinity"/>
+                <Button text="Browse Tournaments" onAction="#handleTournaments" styleClass="secondary-button" maxWidth="Infinity"/>
                 <Button fx:id="usersButton" text="Manage Users" onAction="#handleUsers"
                         styleClass="secondary-button" maxWidth="Infinity"/>
             </VBox>

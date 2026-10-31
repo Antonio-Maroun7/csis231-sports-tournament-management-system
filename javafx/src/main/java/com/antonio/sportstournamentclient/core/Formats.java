@@ -1,5 +1,6 @@
 package com.antonio.sportstournamentclient.core;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -13,6 +14,11 @@ public class Formats {
     /** 2026-10-18T10:25 -> "Oct 18, 2026" */
     public static String date(LocalDateTime dateTime) {
         return dateTime == null ? "" : DATE.format(dateTime);
+    }
+
+    /** 2026-11-01 -> "Nov 01, 2026" */
+    public static String date(LocalDate date) {
+        return date == null ? "" : DATE.format(date);
     }
 
     /** TEAM_MANAGER -> "Team Manager" */

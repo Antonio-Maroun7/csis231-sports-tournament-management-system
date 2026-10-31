@@ -257,3 +257,23 @@
         -fx-opacity: 0.45;
     }
 
+/* ---------- status badges (tournaments; registrations/venues/matches later) ---------- */
+.badge {
+    -fx-background-radius: 12;
+    -fx-padding: 3 12 3 12;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+.badge-draft {
+    -fx-background-color: #8a9bb0;
+}
+.badge-open {
+    -fx-background-color: #17914a;
+}
+.badge-progress {
+    -fx-background-color: #1f6feb;
+}
+.badge-completed {
+    -fx-background-color: #11283f;
+}
