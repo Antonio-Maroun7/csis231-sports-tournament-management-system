@@ -2,10 +2,13 @@ package com.antonio.sportstournamentclient.core;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Small UI helpers shared by all screens: coloured status messages and confirmation dialogs.
@@ -39,6 +42,26 @@ public class Ui {
         String css = SceneManager.getStylesheet();
         if (css != null) {
             dialog.getDialogPane().getStylesheets().add(css);
+        }
+    }
+
+    /** Makes a ComboBox show each item as text, e.g. Ui.displayAs(teamCombo, TeamResponse::teamName). */
+    public static <T> void displayAs(ComboBox<T> comboBox, Function<T, String> toText) {
+        comboBox.setCellFactory(list -> new TextCell<>(toText));
+        comboBox.setButtonCell(new TextCell<>(toText));
+    }
+
+    private static class TextCell<T> extends ListCell<T> {
+        private final Function<T, String> toText;
+
+        TextCell(Function<T, String> toText) {
+            this.toText = toText;
+        }
+
+        @Override
+        protected void updateItem(T item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(empty || item == null ? null : toText.apply(item));
         }
     }
 

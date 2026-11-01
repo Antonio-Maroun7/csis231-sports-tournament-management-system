@@ -33,6 +33,7 @@
                 <Label text="Status" styleClass="field-label"/>
                 <ComboBox fx:id="statusFilter" prefWidth="170"/>
                 <Button text="Open Details" onAction="#handleOpenDetails" styleClass="secondary-button"/>
+                <Button fx:id="registerTeamButton" text="Register Team" onAction="#handleRegisterTeam" styleClass="primary-button"/>
                 <Button fx:id="editButton" text="Edit" onAction="#handleEdit" styleClass="secondary-button"/>
                 <Button fx:id="advanceButton" text="Advance Status" onAction="#handleAdvance" styleClass="primary-button"/>
                 <Button fx:id="deleteButton" text="Delete" onAction="#handleDelete" styleClass="danger-button"/>

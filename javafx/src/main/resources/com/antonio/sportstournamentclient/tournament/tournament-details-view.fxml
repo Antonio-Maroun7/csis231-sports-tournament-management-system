@@ -52,11 +52,8 @@
                 </HBox>
             </VBox>
 
-            <!-- registered teams: Step 7 (tournament registration) -->
-            <VBox styleClass="card" spacing="8">
-                <Label text="Registered Teams" styleClass="section-title"/>
-                <Label text="Team registration comes in the next step." styleClass="page-subtitle"/>
-            </VBox>
+            <!-- registered teams: panel from the registration feature (tournament never depends on it in Java) -->
+            <fx:include source="../registration/registered-teams-panel.fxml"/>
 
             <Label fx:id="messageLabel" wrapText="true"/>
         </VBox>

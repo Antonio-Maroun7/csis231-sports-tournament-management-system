@@ -52,7 +52,7 @@ public class SidebarController {
             teamsButton.getStyleClass().add("active");
         } else if (view.startsWith("player/")) {
             playersButton.getStyleClass().add("active");
-        } else if (view.startsWith("tournament/")) {
+        } else if (view.startsWith("tournament/") || view.startsWith("registration/")) {
             tournamentsButton.getStyleClass().add("active");
         } else if (view.startsWith("user/")) {
             usersButton.getStyleClass().add("active");

@@ -277,3 +277,20 @@
 .badge-completed {
     -fx-background-color: #11283f;
 }
+.badge-pending {
+    -fx-background-color: #e8a317;
+}
+.badge-approved {
+    -fx-background-color: #17914a;
+}
+.badge-rejected {
+    -fx-background-color: #d64545;
+}
+
+/* light-blue information box (mockup 10) */
+.info-box {
+    -fx-background-color: #e8f0fe;
+    -fx-background-radius: 10;
+    -fx-padding: 14 16 14 16;
+    -fx-text-fill: #1d2733;
+}

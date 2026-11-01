@@ -40,6 +40,7 @@ public class TournamentsController {
     @FXML private Button editButton;
     @FXML private Button advanceButton;
     @FXML private Button deleteButton;
+    @FXML private Button registerTeamButton;
     @FXML private Label messageLabel;
 
     @FXML
@@ -65,6 +66,10 @@ public class TournamentsController {
             button.setVisible(canWrite);
             button.setManaged(canWrite);
         }
+        // Team Managers register their teams in OPEN tournaments
+        registerTeamButton.setVisible(Session.isTeamManager());
+        registerTeamButton.setManaged(Session.isTeamManager());
+
         tournamentTable.getSelectionModel().selectedItemProperty().addListener((obs, old, t) -> updateRowButtons(t));
         updateRowButtons(null);
 
@@ -173,6 +178,18 @@ public class TournamentsController {
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** Opens the Tournament Registration View (mockup 10) for the selected OPEN tournament. */
+    @FXML
+    private void handleRegisterTeam() {
+        TournamentResponse tournament = tournamentTable.getSelectionModel().getSelectedItem();
+        Session.setSelectedTournamentId(tournament == null ? null : tournament.id());
+        try {
+            SceneManager.switchScene("registration/tournament-registration-view.fxml");
+        } catch (IOException e) {
+            Ui.error(messageLabel, "Could not open registration: " + e.getMessage());
+        }
+    }
+
     @FXML
     private void handleOpenDetails() {
         TournamentResponse tournament = tournamentTable.getSelectionModel().getSelectedItem();
@@ -201,6 +218,8 @@ public class TournamentsController {
         deleteButton.setDisable(!manageable);
         advanceButton.setText(tournament == null ? "Advance Status" : TournamentStatuses.actionText(tournament.status()));
         advanceButton.setDisable(!manageable || completed);
+        // registration is only possible while the tournament is OPEN
+        registerTeamButton.setDisable(tournament == null || !TournamentStatuses.OPEN.equals(tournament.status()));
     }
 
     /** Table cell that shows the status as a coloured badge. */

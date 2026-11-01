@@ -17,7 +17,8 @@ import java.util.List;
 /**
  * Tournament Details View (mockup 09): information about the tournament chosen in the
  * Tournaments View (Session.selectedTournamentId). Its organizer / an Admin can edit it,
- * move it to the next status, or delete it. Registered teams come in Step 7.
+ * move it to the next status, or delete it. The "Registered Teams" section is the
+ * registration feature's panel (registration/registered-teams-panel.fxml).
  */
 public class TournamentDetailsController {
     @FXML private Label subtitleLabel;

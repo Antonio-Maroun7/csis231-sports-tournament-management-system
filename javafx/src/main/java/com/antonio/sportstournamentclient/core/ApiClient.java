@@ -58,6 +58,15 @@ public class ApiClient {
         return read(send(request), type);
     }
 
+    /** PUT without a request body, e.g. PUT /registrations/{id}/approve. */
+    public static <T> T put(String path, Class<T> type) {
+        HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + path))
+                .header("Accept", "application/json")
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        return read(send(request), type);
+    }
+
     public static void delete(String path) {
         HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + path))
                 .DELETE()
