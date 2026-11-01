@@ -1,4 +1,4 @@
-package com.antonio.sportstournament.model;
+package com.antonio.sportstournament.registration;
 
 public enum RegistrationStatus {
     PENDING,

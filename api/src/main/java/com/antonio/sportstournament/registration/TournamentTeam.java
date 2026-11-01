@@ -1,4 +1,4 @@
-package com.antonio.sportstournament.model;
+package com.antonio.sportstournament.registration;
 
 import com.antonio.sportstournament.team.Team;
 import com.antonio.sportstournament.tournament.Tournament;
@@ -35,5 +35,5 @@ public class TournamentTeam {
     private RegistrationStatus status = RegistrationStatus.PENDING;
 
     @Column(name = "registered_at",nullable = false)
-    private LocalDateTime registredAt = LocalDateTime.now();
+    private LocalDateTime registeredAt = LocalDateTime.now();
 }
