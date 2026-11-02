@@ -30,6 +30,9 @@ public class JwtService {
             throw new IllegalStateException(
                     "jwt.secret (JWT_SECRET in api/.env) must be at least 32 characters long.");
         }
+        if (secret.startsWith("change_me")) {
+            throw new IllegalStateException("JWT_SECRET in api/.env is still the example value. Generate a random one.");
+        }
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
         this.parser = Jwts.parser().verifyWith(signingKey).build();   // also rejects expired tokens
         this.expirationMs = expirationMs;
