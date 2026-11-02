@@ -15,14 +15,32 @@ import java.util.function.Function;
  */
 public class Ui {
 
+    /**
+     * Shows a neutral (info) message in a label.
+     *
+     * @param label the message label of the screen
+     * @param text  the text to show
+     */
     public static void info(Label label, String text) {
         setMessage(label, text, "message-info");
     }
 
+    /**
+     * Shows a green (success) message in a label.
+     *
+     * @param label the message label of the screen
+     * @param text  the text to show
+     */
     public static void success(Label label, String text) {
         setMessage(label, text, "message-success");
     }
 
+    /**
+     * Shows a red (error) message in a label.
+     *
+     * @param label the message label of the screen
+     * @param text  the text to show, usually the server's {@code detail}
+     */
     public static void error(Label label, String text) {
         setMessage(label, text, "message-error");
     }
@@ -58,6 +76,7 @@ public class Ui {
             this.toText = toText;
         }
 
+        /** Displays the item as the text produced by {@code toText}; an empty cell shows nothing. */
         @Override
         protected void updateItem(T item, boolean empty) {
             super.updateItem(item, empty);

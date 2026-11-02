@@ -31,11 +31,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
+    /**
+     * @param jwtService         validates the token
+     * @param userDetailsService loads the user named in the token
+     */
     public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Runs once per request: if a valid Bearer token is present, puts the user in the security context.
+     * An invalid or expired token is only logged at debug level; the request stays anonymous.
+     *
+     * @param request     the incoming request
+     * @param response    the response
+     * @param filterChain the rest of the filter chain, always called
+     * @throws ServletException if a later filter fails
+     * @throws IOException      if reading or writing the request fails
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {

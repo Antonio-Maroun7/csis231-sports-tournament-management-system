@@ -48,6 +48,7 @@ public class RegisteredTeamsController {
     private record Data(TournamentResponse tournament, List<RegistrationResponse> registrations) {
     }
 
+    /** Binds the table columns, hides the action buttons until the tournament is known and loads the registrations. */
     @FXML
     private void initialize() {
         teamColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().teamName()));
@@ -67,6 +68,7 @@ public class RegisteredTeamsController {
         }
     }
 
+    /** "Refresh" button (also called at start and after every change): loads the tournament and its registrations in one background call. */
     @FXML
     private void loadRegistrations() {
         Long tournamentId = Session.getSelectedTournamentId();
@@ -106,16 +108,19 @@ public class RegisteredTeamsController {
         withdrawButton.setDisable(!mine);
     }
 
+    /** "Approve" button (organizer or admin): approves the selected PENDING registration. */
     @FXML
     private void handleApprove() {
         decide(true);
     }
 
+    /** "Reject" button (organizer or admin): rejects the selected PENDING registration. */
     @FXML
     private void handleReject() {
         decide(false);
     }
 
+    /** Approves or rejects the selected registration with PUT /api/registrations/{id}/approve or /reject in the background, then reloads. */
     private void decide(boolean approve) {
         RegistrationResponse registration = registrationTable.getSelectionModel().getSelectedItem();
         if (registration == null) {
@@ -131,6 +136,7 @@ public class RegisteredTeamsController {
                 error -> Ui.error(panelMessageLabel, error));
     }
 
+    /** "Withdraw" button: after a confirmation, calls DELETE /api/registrations/{id} for the selected registration in the background. */
     @FXML
     private void handleWithdraw() {
         RegistrationResponse registration = registrationTable.getSelectionModel().getSelectedItem();
@@ -150,7 +156,7 @@ public class RegisteredTeamsController {
                 error -> Ui.error(panelMessageLabel, error));
     }
 
-    /** Opens the Tournament Registration View (mockup 10) for this tournament. */
+    /** "Register Team" button: opens the Tournament Registration View (mockup 10) for this tournament. */
     @FXML
     private void handleRegister() {
         try {

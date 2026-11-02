@@ -16,7 +16,13 @@ import java.util.Optional;
 public class TeamDialog {
     private static final int MAX_NAME_LENGTH = 100;   // same as @Size(max = 100) on the server
 
-    /** Returns the trimmed name, or empty if the user cancelled. */
+    /**
+     * Opens the modal dialog and waits for the answer (call it on the JavaFX thread).
+     *
+     * @param title       window and header title, e.g. "Create Team"
+     * @param currentName name to pre-fill (empty or {@code null} when creating)
+     * @return the trimmed name, or empty if the user cancelled
+     */
     public static Optional<String> askTeamName(String title, String currentName) {
         TextInputDialog dialog = new TextInputDialog(currentName == null ? "" : currentName);
         dialog.setTitle(title);

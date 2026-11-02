@@ -25,6 +25,9 @@ public class PlayerDialog {
     private static final int MAX_POSITION_LENGTH = 30;
 
     /**
+     * Opens the modal dialog and waits for the answer (call it on the JavaFX thread).
+     *
+     * @param title    window and header title, e.g. "Add Player"
      * @param existing the player to edit, or null to add a new one
      * @return the request to send, or empty if the user cancelled
      */

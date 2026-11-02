@@ -30,6 +30,7 @@ public class UsersController {
     @FXML private Button deleteButton;
     @FXML private Label messageLabel;
 
+    /** Admin guard, then binds the table columns and loads the users; non-admins are sent back to the dashboard. */
     @FXML
     private void initialize() {
         // guard: the sidebar hides this page, but never trust the client alone
@@ -56,6 +57,7 @@ public class UsersController {
         loadUsers();
     }
 
+    /** "Refresh" button (also called at start and after every change): loads all users with GET /api/users in the background. */
     @FXML
     private void loadUsers() {
         Ui.info(messageLabel, "Loading users...");
@@ -68,6 +70,7 @@ public class UsersController {
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "+ Create User" button: asks for the account data, then calls POST /api/users in the background and reloads the table. */
     @FXML
     private void handleCreate() {
         UserDialog.askNewUser().ifPresent(request ->
@@ -81,6 +84,7 @@ public class UsersController {
                         error -> Ui.error(messageLabel, error)));
     }
 
+    /** "Delete" button: after a confirmation, calls DELETE /api/users/{id} for the selected account in the background. */
     @FXML
     private void handleDelete() {
         UserResponse user = userTable.getSelectionModel().getSelectedItem();

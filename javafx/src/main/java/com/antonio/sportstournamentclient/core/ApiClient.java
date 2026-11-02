@@ -36,6 +36,15 @@ public class ApiClient {
 
     // -------- Generic helpers --------
 
+    /**
+     * GET {@code BASE_URL + path}: sends the request (with the JWT if a user is logged in) and
+     * converts the JSON body to {@code T}. Blocking: call it from {@link BackgroundTask}.
+     *
+     * @param path path after {@code /api}, e.g. {@code /teams/5}
+     * @param type Jackson type, e.g. {@code new TypeReference<List<TeamResponse>>() {}}
+     * @return the deserialized response body
+     * @throws ApiException if the server answers non-2xx, cannot be reached, or the JSON is unreadable
+     */
     public static <T> T get(String path, TypeReference<T> type) {
         HttpRequest request = newRequest(path)
                 .header("Accept", "application/json")
@@ -44,6 +53,16 @@ public class ApiClient {
         return read(send(request), type);
     }
 
+    /**
+     * POST with a JSON body: serializes {@code payload}, sends it and converts the JSON answer to
+     * {@code type}. Blocking: call it from {@link BackgroundTask}.
+     *
+     * @param path    path after {@code /api}, e.g. {@code /teams}
+     * @param payload request object, written as JSON
+     * @param type    class of the response body
+     * @return the deserialized response body
+     * @throws ApiException if the server answers non-2xx (its {@code detail} is the message), cannot be reached, or the JSON is unreadable
+     */
     public static <T> T post(String path, Object payload, Class<T> type) {
         HttpRequest request = jsonRequest(path)
                 .POST(HttpRequest.BodyPublishers.ofString(write(payload)))
@@ -51,6 +70,15 @@ public class ApiClient {
         return read(send(request), type);
     }
 
+    /**
+     * PUT with a JSON body (used to update a resource). Blocking: call it from {@link BackgroundTask}.
+     *
+     * @param path    path after {@code /api}, e.g. {@code /teams/5}
+     * @param payload request object, written as JSON
+     * @param type    class of the response body
+     * @return the deserialized response body
+     * @throws ApiException if the server answers non-2xx, cannot be reached, or the JSON is unreadable
+     */
     public static <T> T put(String path, Object payload, Class<T> type) {
         HttpRequest request = jsonRequest(path)
                 .PUT(HttpRequest.BodyPublishers.ofString(write(payload)))
@@ -58,7 +86,15 @@ public class ApiClient {
         return read(send(request), type);
     }
 
-    /** PUT without a request body, e.g. PUT /registrations/{id}/approve. */
+    /**
+     * PUT without a request body, e.g. {@code PUT /registrations/{id}/approve}. Blocking: call it
+     * from {@link BackgroundTask}.
+     *
+     * @param path path after {@code /api}
+     * @param type class of the response body
+     * @return the deserialized response body
+     * @throws ApiException if the server answers non-2xx, cannot be reached, or the JSON is unreadable
+     */
     public static <T> T put(String path, Class<T> type) {
         HttpRequest request = newRequest(path)
                 .header("Accept", "application/json")
@@ -67,6 +103,13 @@ public class ApiClient {
         return read(send(request), type);
     }
 
+    /**
+     * DELETE; the answer body is ignored (the API replies 204 No Content). Blocking: call it from
+     * {@link BackgroundTask}.
+     *
+     * @param path path after {@code /api}, e.g. {@code /teams/5}
+     * @throws ApiException if the server answers non-2xx or cannot be reached
+     */
     public static void delete(String path) {
         HttpRequest request = newRequest(path)
                 .DELETE()

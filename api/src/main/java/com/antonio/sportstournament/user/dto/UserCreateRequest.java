@@ -6,6 +6,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Request body of {@code POST /api/users} (ADMIN only).
+ *
+ * @param name     required, max 100 characters
+ * @param email    required, valid email format, max 255 characters
+ * @param password required, 6 to 100 characters (stored only as a hash)
+ * @param role     required: ADMIN, ORGANIZER or TEAM_MANAGER
+ */
 public record UserCreateRequest(
 
         @NotBlank @Size(max = 100)

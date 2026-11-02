@@ -34,6 +34,7 @@ public class TeamsController {
     @FXML private Button deleteButton;
     @FXML private Label messageLabel;
 
+    /** Binds the table columns, shows or hides the write buttons by role, enables double-click for details and loads the teams. */
     @FXML
     private void initialize() {
         // data binding: one column = one field of the TeamResponse record
@@ -67,6 +68,7 @@ public class TeamsController {
         loadTeams();
     }
 
+    /** "Refresh" button (also called at start): loads the teams in the background (only the user's own teams for a Team Manager). */
     @FXML
     private void loadTeams() {
         Ui.info(messageLabel, "Loading teams...");
@@ -82,6 +84,7 @@ public class TeamsController {
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "+ Create Team" button: asks for a name, then calls POST /api/teams in the background and reloads the table. */
     @FXML
     private void handleCreate() {
         TeamDialog.askTeamName("Create Team", "").ifPresent(name -> {
@@ -100,6 +103,7 @@ public class TeamsController {
         });
     }
 
+    /** "Edit" button: asks for a new name for the selected team, then calls PUT /api/teams/{id} in the background. */
     @FXML
     private void handleEdit() {
         TeamResponse team = teamTable.getSelectionModel().getSelectedItem();
@@ -117,6 +121,7 @@ public class TeamsController {
                         error -> Ui.error(messageLabel, error)));
     }
 
+    /** "Delete" button: after a confirmation, calls DELETE /api/teams/{id} for the selected team in the background. */
     @FXML
     private void handleDelete() {
         TeamResponse team = teamTable.getSelectionModel().getSelectedItem();
@@ -132,10 +137,11 @@ public class TeamsController {
                     Ui.success(messageLabel, "Team '" + deleted.teamName() + "' deleted");
                     loadTeams();
                 },
-                // e.g. 409 when the team still has players or venues
+                // e.g. 409 when the team still has players or registrations
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "Open Details" button: opens the Team Details view for the selected team. */
     @FXML
     private void handleOpenDetails() {
         TeamResponse team = teamTable.getSelectionModel().getSelectedItem();

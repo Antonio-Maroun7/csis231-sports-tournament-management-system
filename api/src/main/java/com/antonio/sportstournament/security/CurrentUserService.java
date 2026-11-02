@@ -13,10 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class CurrentUserService {
     private final UserRepository userRepository;
 
+    /**
+     * @param userRepository user table access
+     */
     public CurrentUserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Rule: the owner of a team or tournament always comes from the JWT through this method, never from the request.
+     *
+     * @param authentication the authentication of the current request
+     * @return the database user whose email is the JWT subject
+     * @throws UnauthorizedException     if there is no authenticated caller (401)
+     * @throws ResourceNotFoundException if the user no longer exists (404)
+     */
     @Transactional(readOnly = true)
     public User require(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {

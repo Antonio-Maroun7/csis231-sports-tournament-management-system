@@ -26,6 +26,7 @@ public class SecurityController {
     private boolean enabled;
     private boolean required;
 
+    /** Shows the current 2FA state of the logged-in user (always on for Admins and Organizers) and the email the code is sent to. */
     @FXML
     private void initialize() {
         LoginResponse user = Session.getCurrentUser();
@@ -37,6 +38,7 @@ public class SecurityController {
         show(user.twoFactorEnabled() || required);
     }
 
+    /** "Enable 2FA" / "Disable 2FA" button: after a confirmation (when turning off), calls PUT /api/users/{id}/two-factor in the background and updates the Session. */
     @FXML
     private void handleToggle() {
         boolean turnOn = !enabled;

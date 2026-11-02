@@ -35,6 +35,7 @@ public class PlayersController {
     @FXML private TableColumn<PlayerResponse, String> positionColumn;
     @FXML private Label messageLabel;
 
+    /** Binds the table columns, fills the team combo box and loads the teams the user may pick from. */
     @FXML
     private void initialize() {
         jerseyColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().jerseyNumber()));
@@ -92,6 +93,7 @@ public class PlayersController {
         loadPlayers();
     }
 
+    /** "Refresh" button (also called when a team is picked): loads the players of the selected team in the background. */
     @FXML
     private void loadPlayers() {
         TeamResponse team = teamCombo.getValue();
@@ -110,6 +112,7 @@ public class PlayersController {
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "+ Add Player" button: asks for the player data, then calls POST /api/teams/{teamId}/players for the selected team in the background. */
     @FXML
     private void handleAdd() {
         TeamResponse team = teamCombo.getValue();
@@ -127,6 +130,7 @@ public class PlayersController {
                         error -> Ui.error(messageLabel, error)));
     }
 
+    /** "Edit" button: edits the selected player in a dialog, then calls PUT /api/players/{id} in the background. */
     @FXML
     private void handleEdit() {
         PlayerResponse player = playerTable.getSelectionModel().getSelectedItem();
@@ -143,6 +147,7 @@ public class PlayersController {
                         error -> Ui.error(messageLabel, error)));
     }
 
+    /** "Remove" button: after a confirmation, calls DELETE /api/players/{id} for the selected player in the background. */
     @FXML
     private void handleRemove() {
         PlayerResponse player = playerTable.getSelectionModel().getSelectedItem();
@@ -176,6 +181,7 @@ public class PlayersController {
 
     /** Combo box cell that displays a team by its name. */
     private static class TeamCell extends ListCell<TeamResponse> {
+        /** Displays the team in the combo box by its name; an empty cell shows nothing. */
         @Override
         protected void updateItem(TeamResponse team, boolean empty) {
             super.updateItem(team, empty);

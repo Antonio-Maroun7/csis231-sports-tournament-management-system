@@ -22,6 +22,11 @@ import java.util.Optional;
 public class UserDialog {
     private static final int MIN_PASSWORD_LENGTH = 6;
 
+    /**
+     * Opens the modal "Create User" dialog and waits for the answer (call it on the JavaFX thread).
+     *
+     * @return the new account's data (role TEAM_MANAGER, ORGANIZER or ADMIN), or empty if the user cancelled
+     */
     public static Optional<UserCreateRequest> askNewUser() {
         Dialog<UserCreateRequest> dialog = new Dialog<>();
         dialog.setTitle("Create User");

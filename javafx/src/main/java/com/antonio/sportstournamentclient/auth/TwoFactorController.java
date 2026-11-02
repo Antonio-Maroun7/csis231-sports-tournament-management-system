@@ -52,6 +52,7 @@ public class TwoFactorController {
     private LocalDateTime resendAllowedAt;
     private boolean busy;   // a request is running
 
+    /** Builds the six digit boxes and starts the countdown for the pending 2FA login; returns to the login view if there is none. */
     @FXML
     private void initialize() {
         createDigitFields();
@@ -66,6 +67,7 @@ public class TwoFactorController {
         Platform.runLater(() -> digitFields.get(0).requestFocus());
     }
 
+    /** "Verify Code" button: sends the six digits to POST /api/auth/verify-2fa in the background; on success the user is logged in and the dashboard opens. */
     @FXML
     private void handleVerify() {
         String code = enteredCode();
@@ -93,6 +95,7 @@ public class TwoFactorController {
                 });
     }
 
+    /** "Resend code" link: asks POST /api/auth/resend-2fa for a new emailed code (new token and expiry). */
     @FXML
     private void handleResend() {
         if (busy) {
@@ -118,6 +121,7 @@ public class TwoFactorController {
                 });
     }
 
+    /** "Back to login" link: drops the pending 2FA login and opens the login view. */
     @FXML
     private void handleBackToLogin() {
         backToLogin();

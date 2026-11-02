@@ -29,6 +29,16 @@ public class AuthApi {
         return ApiClient.post("/auth/resend-2fa", new ResendCodeRequest(challengeToken), AuthResult.class);
     }
 
+    /**
+     * Calls {@code POST /api/auth/register}: creates a TEAM_MANAGER account. The answer already
+     * carries the JWT, so the user is logged in right away. Blocking: call it from {@code BackgroundTask}.
+     *
+     * @param name     display name
+     * @param email    login email (must be unused, otherwise the API answers 409)
+     * @param password password, at least 6 characters
+     * @return the new user together with its token
+     * @throws com.antonio.sportstournamentclient.core.ApiException on 400 (invalid data) or 409 (email already used)
+     */
     public static RegisterResponse register(String name, String email, String password) {
         return ApiClient.post("/auth/register", new RegisterRequest(name, email, password), RegisterResponse.class);
     }

@@ -16,7 +16,16 @@ import java.util.List;
 /**
  * Business logic for tournaments: createTournament(), updateTournament(), deleteTournament(),
  * getAllTournaments(), getTournamentById() and the status lifecycle
- * DRAFT -> OPEN -> IN_PROGRESS -> COMPLETED.
+ * DRAFT, OPEN, IN_PROGRESS, COMPLETED.
+ * <ul>
+ *   <li>Rule 1: the end date cannot be before the start date (400).</li>
+ *   <li>Rule 2: only an ORGANIZER or an ADMIN can create a tournament; the caller becomes its organizer.</li>
+ *   <li>Rule 3: a new tournament always starts as DRAFT.</li>
+ *   <li>Rule 4: the status only moves forward, one step at a time (409 otherwise).</li>
+ *   <li>Rule 5: only the tournament's organizer (or an ADMIN) can edit, change the status of, or delete it;
+ *       a COMPLETED tournament cannot be edited.</li>
+ *   <li>Rule 6: a tournament that still has registrations or matches cannot be deleted (409 from the database).</li>
+ * </ul>
  */
 @Service
 public class TournamentService {
@@ -28,6 +37,15 @@ public class TournamentService {
         this.mapper = mapper;
     }
 
+    /**
+     * Creates a tournament owned by the caller (Rules 1, 2 and 3).
+     *
+     * @param caller  the logged-in user, taken from the JWT
+     * @param request name and dates
+     * @return the saved tournament, with status DRAFT
+     * @throws ForbiddenException  if the caller is not an ORGANIZER or ADMIN
+     * @throws BadRequestException if the end date is before the start date
+     */
     @Transactional
     public TournamentResponse create(User caller, TournamentRequest request) {
         // Rule 2: only an ORGANIZER (or an ADMIN) can own a tournament
@@ -39,7 +57,14 @@ public class TournamentService {
         return mapper.toResponse(repository.save(tournament));
     }
 
-    /** All tournaments, or only one status (?status=OPEN), or only one organizer's (?organizerId=2). */
+    /**
+     * All tournaments, or only one status (?status=OPEN), or only one organizer's (?organizerId=2).
+     * If both filters are given, the status filter is used.
+     *
+     * @param status      optional status filter
+     * @param organizerId optional organizer filter
+     * @return the matching tournaments as DTOs
+     */
     @Transactional(readOnly = true)
     public List<TournamentResponse> findAll(TournamentStatus status, Long organizerId) {
         List<Tournament> tournaments;
@@ -53,11 +78,30 @@ public class TournamentService {
         return tournaments.stream().map(mapper::toResponse).toList();
     }
 
+    /**
+     * Finds one tournament.
+     *
+     * @param id the tournament id
+     * @return the tournament as a DTO
+     * @throws ResourceNotFoundException if it does not exist
+     */
     @Transactional(readOnly = true)
     public TournamentResponse findById(Long id) {
         return mapper.toResponse(findEntity(id));
     }
 
+    /**
+     * Edits the name and dates of a tournament (Rules 1 and 5). The status is not changed here.
+     *
+     * @param caller  the logged-in user
+     * @param id      the tournament id
+     * @param request the new name and dates
+     * @return the updated tournament
+     * @throws ResourceNotFoundException if it does not exist
+     * @throws ForbiddenException        if the caller is neither its organizer nor an ADMIN
+     * @throws ConflictException         if the tournament is COMPLETED
+     * @throws BadRequestException       if the end date is before the start date
+     */
     @Transactional
     public TournamentResponse update(User caller, Long id, TournamentRequest request) {
         Tournament tournament = findEntity(id);
@@ -72,7 +116,15 @@ public class TournamentService {
 
     /**
      * Rule 4: the status only moves FORWARD, one step at a time:
-     * DRAFT -> OPEN -> IN_PROGRESS -> COMPLETED.
+     * DRAFT, then OPEN, then IN_PROGRESS, then COMPLETED. Skipping or going back is refused.
+     *
+     * @param caller    the logged-in user
+     * @param id        the tournament id
+     * @param newStatus the requested status (must be the one right after the current status)
+     * @return the updated tournament
+     * @throws ResourceNotFoundException if it does not exist
+     * @throws ForbiddenException        if the caller is neither its organizer nor an ADMIN
+     * @throws ConflictException         if newStatus is not the next status
      */
     @Transactional
     public TournamentResponse changeStatus(User caller, Long id, TournamentStatus newStatus) {
@@ -90,8 +142,13 @@ public class TournamentService {
     }
 
     /**
-     * Rule 6: if the tournament already has registrations or matches, the database foreign keys
-     * block the delete and GlobalExceptionHandler returns 409 CONFLICT.
+     * Deletes a tournament (Rule 5). Rule 6: if the tournament already has registrations or matches,
+     * the database foreign keys block the delete and GlobalExceptionHandler returns 409 CONFLICT.
+     *
+     * @param caller the logged-in user
+     * @param id     the tournament id
+     * @throws ResourceNotFoundException if it does not exist
+     * @throws ForbiddenException        if the caller is neither its organizer nor an ADMIN
      */
     @Transactional
     public void delete(User caller, Long id) {
@@ -103,12 +160,25 @@ public class TournamentService {
     /**
      * Helpers
      */
+    /**
+     * Loads the tournament entity.
+     *
+     * @param id the tournament id
+     * @return the Tournament entity
+     * @throws ResourceNotFoundException if it does not exist
+     */
     public Tournament findEntity(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found " + id));
     }
 
-    /** Ownership rule shared by the tournament and registration features. */
+    /**
+     * Ownership rule shared by the tournament and registration features.
+     *
+     * @param caller     the logged-in user
+     * @param tournament the tournament being changed
+     * @throws ForbiddenException if the caller is neither the tournament's organizer nor an ADMIN
+     */
     public void requireOrganizerOrAdmin(User caller, Tournament tournament) {
         if (caller.getRole() != Role.ADMIN && !tournament.getOrganizer().getId().equals(caller.getId())) {
             throw new ForbiddenException("Only the tournament's organizer can change this tournament.");

@@ -5,6 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Request body of {@code POST /api/auth/login}.
+ *
+ * @param email    required, valid email format, max 255 characters
+ * @param password required, 6 to 100 characters
+ */
 public record LoginRequest(
 
         @NotBlank @Email @Size(max = 255)

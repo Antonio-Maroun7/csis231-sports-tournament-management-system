@@ -6,6 +6,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entity mapped to the {@code standings} table. One row is the league-table line of one team in one tournament
+ * (games played, won, drawn, lost, points and goal difference). The pair (tournament_id, team_id) is unique.
+ * Prepared for the final project; it has no repository, service or API yet.
+ */
 @Entity
 @Table(name = "standings",
        uniqueConstraints = {

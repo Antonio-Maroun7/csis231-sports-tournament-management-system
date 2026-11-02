@@ -7,6 +7,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity mapped to the {@code venues} table. One row is a place (name, location, capacity, indoor or outdoor
+ * surface) that belongs to one team and must be approved before use; its status starts as PENDING.
+ * Prepared for the final project; it has no repository, service or API yet.
+ */
 @Entity
 @Table(name = "venues")
 @Getter

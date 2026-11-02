@@ -28,6 +28,7 @@ public class RegistrationController {
     @FXML private Button registerButton;
     @FXML private Label messageLabel;
 
+    /** "Register" button: validates the form (required fields, email, password length and match), then calls POST /api/auth/register in the background and opens the dashboard. */
     @FXML
     private void handleRegistration() {
         String name = nameField.getText().trim();
@@ -85,6 +86,7 @@ public class RegistrationController {
         thread.start();
     }
 
+    /** "Log in" link: opens the login view. */
     @FXML
     private void handleLogin() throws IOException {
         SceneManager.switchScene("auth/login-view.fxml");

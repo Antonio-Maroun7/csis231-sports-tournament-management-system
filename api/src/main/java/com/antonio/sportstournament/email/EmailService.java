@@ -17,12 +17,26 @@ public class EmailService {
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final String username;
 
+    /**
+     * @param mailSenderProvider gives the mail sender if Spring Mail is configured
+     * @param username           the sending address ({@code spring.mail.username}); blank means mail is not configured
+     */
     public EmailService(ObjectProvider<JavaMailSender> mailSenderProvider,
                         @Value("${spring.mail.username:}") String username) {
         this.mailSenderProvider = mailSenderProvider;
         this.username = username;
     }
 
+    /**
+     * Emails the 6-digit login code. If mail is not configured (development), the code is only written to the
+     * server log as a warning and nothing is sent.
+     *
+     * @param toEmail         recipient address
+     * @param userName        name used in the greeting
+     * @param code            the 6-digit code
+     * @param validityMinutes how long the code is valid, shown in the message
+     * @throws EmailDeliveryException if the mail server refuses or fails to send (becomes HTTP 503)
+     */
     public void sendLoginCode(String toEmail, String userName, String code, int validityMinutes) {
         JavaMailSender sender = mailSenderProvider.getIfAvailable();
         if (username.isBlank() || sender == null) {

@@ -33,6 +33,16 @@ public class TwoFactorService {
     private final int maxAttempts;
     private final int resendCooldownSeconds;
 
+    /**
+     * @param repository            stores the challenges
+     * @param emailService          sends the code by email
+     * @param mapper                builds the login response
+     * @param passwordEncoder       hashes and checks the code
+     * @param jwtService            signs the JWT after a correct code
+     * @param validityMinutes       how long a code is valid ({@code app.two-factor.code-validity-minutes}, default 5)
+     * @param maxAttempts           wrong tries allowed ({@code app.two-factor.max-attempts}, default 5)
+     * @param resendCooldownSeconds minimum seconds between codes ({@code app.two-factor.resend-cooldown-seconds}, default 60)
+     */
     public TwoFactorService(TwoFactorChallengeRepository repository, EmailService emailService,
                             UserMapper mapper, PasswordEncoder passwordEncoder, JwtService jwtService,
                             @Value("${app.two-factor.code-validity-minutes:5}") int validityMinutes,
@@ -48,12 +58,28 @@ public class TwoFactorService {
         this.resendCooldownSeconds = resendCooldownSeconds;
     }
 
+    /**
+     * Rule: only one open challenge per user - earlier unused ones are invalidated, then a new
+     * 6-digit code is generated, stored as a hash and emailed.
+     *
+     * @param user the user who passed the password check
+     * @return a result with {@code twoFactorRequired=true}, the challenge token, the masked email and the expiry
+     * @throws com.antonio.sportstournament.exception.EmailDeliveryException if the email cannot be sent (503)
+     */
     @Transactional
     public AuthResult createChallenge(User user) {
         repository.markUnusedChallengesUsed(user);
         return createAndSend(user);
     }
 
+    /**
+     * Rule: a code can be used once, only before it expires, and only {@code maxAttempts} wrong tries are
+     * allowed before the challenge is burned. {@code noRollbackFor} keeps the attempt counter saved when a 401 is thrown.
+     *
+     * @param request challenge token and 6-digit code
+     * @return the user with a JWT
+     * @throws UnauthorizedException if the challenge is unknown, used or expired, or the code is wrong (401)
+     */
     @Transactional(noRollbackFor = UnauthorizedException.class)
     public com.antonio.sportstournament.auth.dto.LoginResponse verify(VerifyTwoFactorRequest request) {
         TwoFactorChallenge challenge = findChallenge(request.challengeToken());
@@ -74,6 +100,15 @@ public class TwoFactorService {
         return mapper.toLoginResponse(user, jwtService.generateToken(user.getEmail()));
     }
 
+    /**
+     * Rule: a new code can be requested only after the cool-down; the old challenge is marked used
+     * and a fresh one is emailed.
+     *
+     * @param request the token of the current challenge
+     * @return the new challenge
+     * @throws UnauthorizedException if the challenge is unknown, used or expired (401)
+     * @throws ConflictException     if the cool-down has not passed yet (409)
+     */
     @Transactional
     public AuthResult resend(ResendCodeRequest request) {
         TwoFactorChallenge oldChallenge = findChallenge(request.challengeToken());

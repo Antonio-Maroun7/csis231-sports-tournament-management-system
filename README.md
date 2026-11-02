@@ -187,6 +187,12 @@ From `api/`, run `.\mvnw.cmd test`. The classes are `SecurityFlowTest` (12 tests
 - **Client**: the token is kept in memory only and is forgotten on logout.
 - Credentials belong in ignored `api/.env` or environment variables, with `api/.env.example` as the template. There is no HTTP/IP rate limiting on the login endpoints.
 
+## Code Documentation
+
+- Every class and public method in `api/` and `javafx/` is documented with Javadoc.
+- The business rules are described in the service classes, and each controller lists its endpoints, allowed roles and status codes.
+- To generate the HTML documentation, run `.\mvnw.cmd javadoc:javadoc` in `api/`, then open `api/target/reports/apidocs/index.html`.
+
 ## Future Development
 
 The final phase will add venues, venue availability, match scheduling, match results, standings, and their REST APIs and JavaFX views. These correspond to expected views 11–19.

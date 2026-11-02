@@ -6,6 +6,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity for the {@code users} table: one row is one account (admin, organizer or team manager).
+ * The email is unique and the password is stored only as a hash. One user can own many teams
+ * (team.manager) and can organize many tournaments (tournament.organizer).
+ */
 @Entity
 @Table(name = "users")
 @Getter
@@ -20,12 +25,15 @@ public class User {
     @Column(nullable = false,length=100)
     private String name;
 
+    // Login name; unique. UserService.create stores it trimmed and in lower case.
     @Column(nullable = false,unique = true,length = 255)
     private String email;
 
+    // Hashed password (never the plain text).
     @Column(nullable = false,name="password_hash")
     private String passwordHash;
 
+    // ADMIN, ORGANIZER or TEAM_MANAGER (default).
     @Enumerated(EnumType.STRING)
     @Column(nullable = false,length = 20)
     private Role role = Role.TEAM_MANAGER;
@@ -34,9 +42,11 @@ public class User {
     @Column(name="two_factor_secret",length=64)
     private String twoFactorSecret;
 
+    // When true, login needs the 6-digit code sent by email. Always true for ADMIN and ORGANIZER.
     @Column(name="two_factor_enabled",nullable = false)
     private boolean twoFactorEnabled =false;
 
+    // Set when the object is created.
     @Column(nullable = false,name="created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

@@ -9,6 +9,11 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Entity mapped to the {@code matches} table. One row is one scheduled game between a home team and an
+ * away team of a tournament, played at a venue on a date between a start and an end time; it also stores the final score.
+ * Prepared for the final project; it has no repository, service or API yet.
+ */
 @Entity
 @Table(name = "matches")
 @Getter

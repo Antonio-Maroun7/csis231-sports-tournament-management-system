@@ -15,6 +15,15 @@ import java.util.function.Consumer;
  */
 public class BackgroundTask {
 
+    /**
+     * Runs {@code call} on a daemon thread, then reports the result on the JavaFX thread. A 401
+     * while a user is logged in (expired token) is handled here: the session is cleared and the
+     * login view is shown, so {@code onError} is not called.
+     *
+     * @param call      the blocking work, usually an {@code XxxApi} call
+     * @param onSuccess receives the result of {@code call} (JavaFX thread)
+     * @param onError   receives the message to show the user when {@code call} fails (JavaFX thread)
+     */
     public static <T> void run(Callable<T> call, Consumer<T> onSuccess, Consumer<String> onError) {
         Task<T> task = new Task<>() {
             @Override

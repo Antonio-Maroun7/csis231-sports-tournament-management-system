@@ -50,6 +50,7 @@ public class TournamentRegistrationController {
                         List<RegistrationResponse> myRegistrations) {
     }
 
+    /** Fills the two combo boxes (open tournaments, the manager's teams), binds "My Registrations" and loads the data; non-managers get a message instead. */
     @FXML
     private void initialize() {
         Ui.displayAs(tournamentCombo, TournamentResponse::name);
@@ -136,6 +137,7 @@ public class TournamentRegistrationController {
                 : "Register a team in " + tournament.name());
     }
 
+    /** "Register Team" button: registers the chosen team in the chosen tournament with POST /api/tournaments/{id}/registrations in the background (it starts PENDING). */
     @FXML
     private void handleRegister() {
         TournamentResponse tournament = tournamentCombo.getValue();
@@ -159,6 +161,7 @@ public class TournamentRegistrationController {
                 });
     }
 
+    /** "Withdraw" button: after a confirmation, calls DELETE /api/registrations/{id} for the selected row of "My Registrations". */
     @FXML
     private void handleWithdraw() {
         RegistrationResponse registration = myRegistrationsTable.getSelectionModel().getSelectedItem();
@@ -178,7 +181,7 @@ public class TournamentRegistrationController {
                 error -> Ui.error(messageLabel, error));
     }
 
-    /** Back to the tournament we came from, otherwise to the Tournaments list. */
+    /** "Cancel" button: goes back to the tournament we came from, otherwise to the Tournaments list. */
     @FXML
     private void handleCancel() {
         try {

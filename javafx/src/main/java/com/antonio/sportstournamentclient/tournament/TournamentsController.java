@@ -43,6 +43,7 @@ public class TournamentsController {
     @FXML private Button registerTeamButton;
     @FXML private Label messageLabel;
 
+    /** Binds the table columns, fills the status filter, shows the buttons allowed for the user's role, enables double-click for details and loads the tournaments. */
     @FXML
     private void initialize() {
         nameColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().name()));
@@ -87,6 +88,7 @@ public class TournamentsController {
         loadTournaments();
     }
 
+    /** "Refresh" button (also called when the status filter changes): loads all tournaments, or only those with the chosen status, in the background. */
     @FXML
     private void loadTournaments() {
         String filter = statusFilter.getValue();
@@ -101,6 +103,7 @@ public class TournamentsController {
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "+ Create Tournament" button: asks for name and dates, then calls POST /api/tournaments in the background (the new tournament starts as DRAFT). */
     @FXML
     private void handleCreate() {
         TournamentDialog.askTournament("Create Tournament", null).ifPresent(form -> {
@@ -115,6 +118,7 @@ public class TournamentsController {
         });
     }
 
+    /** "Edit" button: edits name and dates of the selected tournament, then calls PUT /api/tournaments/{id} in the background. */
     @FXML
     private void handleEdit() {
         TournamentResponse tournament = tournamentTable.getSelectionModel().getSelectedItem();
@@ -157,6 +161,7 @@ public class TournamentsController {
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "Delete" button: after a confirmation, calls DELETE /api/tournaments/{id} for the selected tournament in the background. */
     @FXML
     private void handleDelete() {
         TournamentResponse tournament = tournamentTable.getSelectionModel().getSelectedItem();
@@ -188,6 +193,7 @@ public class TournamentsController {
         }
     }
 
+    /** "Open Details" button: opens the Tournament Details view for the selected tournament. */
     @FXML
     private void handleOpenDetails() {
         TournamentResponse tournament = tournamentTable.getSelectionModel().getSelectedItem();
@@ -224,6 +230,7 @@ public class TournamentsController {
     private static class StatusBadgeCell extends TableCell<TournamentResponse, String> {
         private final Label badge = new Label();
 
+        /** Displays the status as a coloured badge; an empty cell shows nothing. */
         @Override
         protected void updateItem(String status, boolean empty) {
             super.updateItem(status, empty);
@@ -239,6 +246,7 @@ public class TournamentsController {
 
     /** Combo box cell that shows "All statuses" / "In Progress" instead of the raw enum value. */
     private static class StatusFilterCell extends ListCell<String> {
+        /** Displays "All statuses" or the readable status name (e.g. "In Progress"); an empty cell shows nothing. */
         @Override
         protected void updateItem(String value, boolean empty) {
             super.updateItem(value, empty);

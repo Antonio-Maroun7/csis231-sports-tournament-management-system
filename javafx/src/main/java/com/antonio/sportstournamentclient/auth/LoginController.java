@@ -26,6 +26,7 @@ public class LoginController {
     @FXML private Button loginButton;
     @FXML private Label messageLabel;
 
+    /** Loads the login view: shows the one-shot message left in the Session (e.g. "session expired"), if any. */
     @FXML
     private void initialize() {
         // e.g. "Your session has expired" after a 401; shown once
@@ -34,6 +35,8 @@ public class LoginController {
             Ui.info(messageLabel, flash);
         }
     }
+
+    /** "Login" button (or Enter): validates the fields, then calls POST /api/auth/login on a background thread; goes to the 2FA view or the dashboard. */
     @FXML
     private void handleLogin() {
         String email = emailField.getText().trim();
@@ -88,11 +91,13 @@ public class LoginController {
         thread.start();
     }
 
+    /** "Create an account" link: opens the registration view. */
     @FXML
     private void handleRegister() throws IOException {
         SceneManager.switchScene("auth/registration-view.fxml");
     }
 
+    /** "Clear" button: empties the email and password fields and the message. */
     @FXML
     private void handleClear() {
         emailField.clear();

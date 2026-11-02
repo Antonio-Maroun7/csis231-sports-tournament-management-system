@@ -6,7 +6,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * JSON returned for one tournament.
+ * JSON returned for one tournament (responses of the {@code /api/tournaments} endpoints).
+ *
+ * @param id            tournament id
+ * @param name          tournament name
+ * @param organizerId   id of the user who owns the tournament
+ * @param organizerName display name of that organizer
+ * @param startDate     first day
+ * @param endDate       last day
+ * @param status        current lifecycle status
+ * @param createdAt     when the tournament was created
  */
 public record TournamentResponse(
         Long id,

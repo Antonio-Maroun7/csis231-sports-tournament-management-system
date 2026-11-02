@@ -20,6 +20,13 @@ import java.util.List;
  * Business logic for team registrations (tournament_teams):
  * registerTeamInTournament(), approveTeamRegistration(), rejectTeamRegistration(),
  * removeTeamFromTournament(), getTournamentTeams().
+ * <ul>
+ *   <li>Rule 1: a team can register only while the tournament is OPEN.</li>
+ *   <li>Rule 2: a team cannot register twice in the same tournament.</li>
+ *   <li>Rule 3: a new registration is PENDING; the tournament's organizer approves or rejects it.</li>
+ *   <li>Rule 4: a team can withdraw only while the tournament is OPEN.</li>
+ *   <li>Teams are registered and withdrawn by their own manager (or an ADMIN).</li>
+ * </ul>
  */
 @Service
 public class RegistrationService {
@@ -38,6 +45,13 @@ public class RegistrationService {
         this.mapper = mapper;
     }
 
+    /**
+     * Lists the teams registered in a tournament.
+     *
+     * @param tournamentId the tournament id
+     * @return its registrations, oldest first
+     * @throws ResourceNotFoundException if the tournament does not exist
+     */
     @Transactional(readOnly = true)
     public List<RegistrationResponse> findByTournament(Long tournamentId) {
         tournamentService.findEntity(tournamentId);   // 404 if the tournament does not exist
@@ -46,6 +60,13 @@ public class RegistrationService {
                 .toList();
     }
 
+    /**
+     * Lists the tournaments a team has registered for.
+     *
+     * @param teamId the team id
+     * @return the team's registrations, newest first
+     * @throws ResourceNotFoundException if the team does not exist
+     */
     @Transactional(readOnly = true)
     public List<RegistrationResponse> findByTeam(Long teamId) {
         teamService.findEntity(teamId);               // 404 if the team does not exist
@@ -54,6 +75,18 @@ public class RegistrationService {
                 .toList();
     }
 
+    /**
+     * Registers a team in a tournament. The team must belong to the caller unless the caller is an ADMIN,
+     * then Rules 1 and 2 are checked. The registration starts as PENDING (Rule 3).
+     *
+     * @param caller       the logged-in user
+     * @param tournamentId the tournament to join
+     * @param teamId       the team to register
+     * @return the new PENDING registration
+     * @throws ResourceNotFoundException if the tournament or the team does not exist
+     * @throws ForbiddenException        if the team is not managed by the caller (and the caller is not an ADMIN)
+     * @throws ConflictException         if the tournament is not OPEN, or the team is already registered
+     */
     @Transactional
     public RegistrationResponse register(User caller, Long tournamentId, Long teamId) {
         Tournament tournament = tournamentService.findEntity(tournamentId);
@@ -76,19 +109,45 @@ public class RegistrationService {
         return mapper.toResponse(repository.save(registration));
     }
 
-    /** Rule 3: the Organizer approves a PENDING registration. */
+    /**
+     * Rule 3: the Organizer approves a PENDING registration.
+     *
+     * @param caller the logged-in user (the tournament's organizer or an ADMIN)
+     * @param id     the registration id
+     * @return the registration, now APPROVED
+     * @throws ResourceNotFoundException if the registration does not exist
+     * @throws ForbiddenException        if the caller does not own the tournament
+     * @throws ConflictException         if the registration is not PENDING or the tournament is COMPLETED
+     */
     @Transactional
     public RegistrationResponse approve(User caller, Long id) {
         return decide(caller, id, RegistrationStatus.APPROVED);
     }
 
-    /** Rule 3: the Organizer rejects a PENDING registration. */
+    /**
+     * Rule 3: the Organizer rejects a PENDING registration.
+     *
+     * @param caller the logged-in user (the tournament's organizer or an ADMIN)
+     * @param id     the registration id
+     * @return the registration, now REJECTED
+     * @throws ResourceNotFoundException if the registration does not exist
+     * @throws ForbiddenException        if the caller does not own the tournament
+     * @throws ConflictException         if the registration is not PENDING or the tournament is COMPLETED
+     */
     @Transactional
     public RegistrationResponse reject(User caller, Long id) {
         return decide(caller, id, RegistrationStatus.REJECTED);
     }
 
-    /** Rule 4: a team can withdraw only while registration is still open. */
+    /**
+     * Rule 4: a team can withdraw only while registration is still open.
+     *
+     * @param caller the logged-in user (the team's manager or an ADMIN)
+     * @param id     the registration id
+     * @throws ResourceNotFoundException if the registration does not exist
+     * @throws ForbiddenException        if the caller does not manage the team
+     * @throws ConflictException         if the tournament is no longer OPEN
+     */
     @Transactional
     public void withdraw(User caller, Long id) {
         TournamentTeam registration = findEntity(id);
@@ -116,6 +175,13 @@ public class RegistrationService {
         return mapper.toResponse(repository.save(registration));
     }
 
+    /**
+     * Loads the registration entity.
+     *
+     * @param id the registration id
+     * @return the TournamentTeam entity
+     * @throws ResourceNotFoundException if it does not exist
+     */
     public TournamentTeam findEntity(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registration not found " + id));

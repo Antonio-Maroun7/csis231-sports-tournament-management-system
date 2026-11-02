@@ -31,6 +31,7 @@ public class DashboardController {
     @FXML private Button usersButton;
     @FXML private Label messageLabel;
 
+    /** Loads the team and tournament counters for the logged-in user and shows the role-based quick actions. */
     @FXML
     private void initialize() {
         LoginResponse user = Session.getCurrentUser();
@@ -82,6 +83,7 @@ public class DashboardController {
                 });
     }
 
+    /** "+ Create Team" quick action (Team Managers and Admins): asks for a name, then calls POST /api/teams in the background and refreshes the team counter. */
     @FXML
     private void handleCreateTeam() {
         TeamDialog.askTeamName("Create Team", "").ifPresent(name -> {
@@ -95,16 +97,19 @@ public class DashboardController {
         });
     }
 
+    /** "View Teams" button: opens the teams view. */
     @FXML
     private void handleViewTeams() throws IOException {
         SceneManager.switchScene("team/teams-view.fxml");
     }
 
+    /** "Browse Tournaments" button: opens the tournaments view. */
     @FXML
     private void handleTournaments() throws IOException {
         SceneManager.switchScene("tournament/tournaments-view.fxml");
     }
 
+    /** "Manage Users" button (administrators only): opens the users view. */
     @FXML
     private void handleUsers() throws IOException {
         SceneManager.switchScene("user/users-view.fxml");

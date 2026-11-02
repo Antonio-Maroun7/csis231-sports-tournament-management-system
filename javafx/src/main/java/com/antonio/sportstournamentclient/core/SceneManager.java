@@ -22,6 +22,11 @@ public class SceneManager {
     private static Stage stage;
     private static String currentView;
 
+    /**
+     * Registers the application window; must be called once before {@link #switchScene(String)}.
+     *
+     * @param primaryStage the primary stage received in {@code Application.start}
+     */
     public static void setStage(Stage primaryStage) {
         stage = primaryStage;
     }
@@ -37,6 +42,13 @@ public class SceneManager {
         return css == null ? null : css.toExternalForm();
     }
 
+    /**
+     * Loads a view and shows it in the main window. The first call creates the scene (1180x740,
+     * shared stylesheet); later calls only replace its root, so size and styling are kept.
+     *
+     * @param fxml view path relative to the resource root, e.g. {@code "team/teams-view.fxml"}
+     * @throws IOException if the view does not exist or cannot be loaded
+     */
     public static void switchScene(String fxml) throws IOException {
         // an ABSOLUTE path: a relative one would be resolved from this class's package (core/)
         URL location = SceneManager.class.getResource(VIEW_ROOT + fxml);

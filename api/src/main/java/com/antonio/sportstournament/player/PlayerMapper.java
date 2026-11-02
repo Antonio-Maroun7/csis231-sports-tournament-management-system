@@ -7,10 +7,18 @@ import org.springframework.stereotype.Component;
 
 /**
  * Converts between the Player entity and its DTOs.
+ * {@link PlayerRequest} to {@link Player} on input, {@link Player} to {@link PlayerResponse} on output.
  */
 @Component
 public class PlayerMapper {
 
+    /**
+     * Builds a new Player for a team from a create request.
+     *
+     * @param request the validated request
+     * @param team    the team taken from the URL
+     * @return an unsaved Player
+     */
     public Player toEntity(PlayerRequest request, Team team) {
         Player player = new Player();
         player.setTeam(team);
@@ -18,6 +26,13 @@ public class PlayerMapper {
         return player;
     }
 
+    /**
+     * Copies the request fields onto a player (names and position are trimmed). A blank position becomes NULL.
+     * The team is not changed.
+     *
+     * @param player  the entity to update
+     * @param request the validated request
+     */
     public void updateEntity(Player player, PlayerRequest request) {
         player.setFirstName(request.firstName().trim());
         player.setLastName(request.lastName().trim());
@@ -27,6 +42,12 @@ public class PlayerMapper {
                 ? null : request.position().trim());
     }
 
+    /**
+     * Converts a player to the JSON sent to clients; adds the team id and name from the player's team.
+     *
+     * @param player the entity (its team must be loadable)
+     * @return the response DTO
+     */
     public PlayerResponse toResponse(Player player) {
         Team team = player.getTeam();
         return new PlayerResponse(

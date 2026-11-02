@@ -27,6 +27,7 @@ public class RegistrationStatuses {
     public static class BadgeCell<S> extends TableCell<S, String> {
         private final Label badge = new Label();
 
+        /** Displays the registration status (PENDING / APPROVED / REJECTED) as a coloured badge; an empty cell shows nothing. */
         @Override
         protected void updateItem(String status, boolean empty) {
             super.updateItem(status, empty);

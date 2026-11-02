@@ -34,11 +34,23 @@ public class SecurityConfig {
     private static final String FORBIDDEN_BODY = "{\"type\":\"about:blank\",\"title\":\"Forbidden\","
             + "\"status\":403,\"detail\":\"You do not have permission to do this.\"}";
 
+    /**
+     * Password hashing bean shared by registration, login, 2FA codes and the bootstrap admin.
+     *
+     * @return a BCrypt encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Exposes Spring's authentication manager as a bean.
+     *
+     * @param configuration Spring Security's authentication configuration
+     * @return the configured authentication manager
+     * @throws Exception if Spring cannot build the manager
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -47,6 +59,12 @@ public class SecurityConfig {
     /**
      * Coarse, URL-level access rules; the first matching rule wins. Ownership rules need database
      * state, so they live in the services.
+     *
+     * @param http               the Spring Security builder
+     * @param jwtService         used by the JWT filter to validate tokens
+     * @param userDetailsService used by the JWT filter to load the user
+     * @return the security filter chain
+     * @throws Exception if the chain cannot be built
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtService jwtService,

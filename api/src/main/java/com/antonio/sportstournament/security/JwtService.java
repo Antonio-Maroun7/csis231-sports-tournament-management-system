@@ -23,6 +23,11 @@ public class JwtService {
     private final JwtParser parser;
     private final long expirationMs;
 
+    /**
+     * @param secret       signing key text ({@code jwt.secret}); at least 32 characters and not the example value
+     * @param expirationMs token lifetime in milliseconds ({@code jwt.expiration})
+     * @throws IllegalStateException if the secret is too short or is still the example value
+     */
     public JwtService(@Value("${jwt.secret}") String secret,
                       @Value("${jwt.expiration}") long expirationMs) {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
@@ -38,6 +43,12 @@ public class JwtService {
         this.expirationMs = expirationMs;
     }
 
+    /**
+     * Builds a signed (HS256) token that expires after {@code jwt.expiration} milliseconds.
+     *
+     * @param subject the user's email, stored as the token subject
+     * @return the compact JWT string
+     */
     public String generateToken(String subject) {
         Date now = new Date();
         return Jwts.builder()
@@ -51,6 +62,8 @@ public class JwtService {
     /**
      * Returns the subject (the email) of a valid token.
      *
+     * @param token the compact JWT from the Authorization header
+     * @return the email stored as the token subject
      * @throws JwtException             if the token is tampered, expired or unsupported
      * @throws IllegalArgumentException if the token is empty or malformed
      */

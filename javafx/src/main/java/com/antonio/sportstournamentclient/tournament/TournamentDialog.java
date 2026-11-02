@@ -23,12 +23,16 @@ import java.util.Optional;
 public class TournamentDialog {
     private static final int MAX_NAME_LENGTH = 120;
 
-    /** What the dialog returns; the controller adds the organizer id. */
+    /** What the dialog returns; the controller turns it into a TournamentRequest (the owner is taken from the JWT by the server). */
     public record TournamentForm(String name, LocalDate startDate, LocalDate endDate) {
     }
 
     /**
+     * Opens the modal dialog and waits for the answer (call it on the JavaFX thread).
+     *
+     * @param title    window and header title, e.g. "Create Tournament"
      * @param existing the tournament to edit, or null to create a new one
+     * @return the entered name and dates, or empty if the user cancelled
      */
     public static Optional<TournamentForm> askTournament(String title, TournamentResponse existing) {
         Dialog<TournamentForm> dialog = new Dialog<>();

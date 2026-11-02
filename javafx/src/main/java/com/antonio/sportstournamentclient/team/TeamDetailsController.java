@@ -29,6 +29,7 @@ public class TeamDetailsController {
 
     private TeamResponse team;
 
+    /** Loads the team chosen in the Teams view (Session.selectedTeamId) with GET /api/teams/{id} in the background. */
     @FXML
     private void initialize() {
         setActionsVisible(false);   // shown once we know whether the user may manage this team
@@ -56,6 +57,7 @@ public class TeamDetailsController {
         messageLabel.setText("");
     }
 
+    /** "Edit Team" button: asks for a new name, then calls PUT /api/teams/{id} in the background and refreshes the details. */
     @FXML
     private void handleEdit() {
         if (team == null) {
@@ -71,6 +73,7 @@ public class TeamDetailsController {
                         error -> Ui.error(messageLabel, error)));
     }
 
+    /** "Delete Team" button: after a confirmation, calls DELETE /api/teams/{id} in the background and returns to the Teams view. */
     @FXML
     private void handleDelete() {
         if (team == null || !Ui.confirm("Delete Team", "Delete the team '" + team.teamName() + "'?")) {
@@ -85,10 +88,11 @@ public class TeamDetailsController {
                     Session.setSelectedTeamId(null);
                     goBack();
                 },
-                // e.g. 409 when the team still has players or venues
+                // e.g. 409 when the team still has players or registrations
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "Back to Teams" button: returns to the Teams view. */
     @FXML
     private void handleBack() {
         goBack();

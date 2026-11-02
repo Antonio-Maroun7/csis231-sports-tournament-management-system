@@ -7,6 +7,11 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Entity mapped to the {@code venue_availability} table. One row is one time slot (a date with a start and an
+ * end time) in which a venue can be booked for matches.
+ * Prepared for the final project; it has no repository, service or API yet.
+ */
 @Entity
 @Table(name = "venue_availability")
 @Getter

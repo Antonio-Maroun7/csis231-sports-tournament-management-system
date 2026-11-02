@@ -33,6 +33,7 @@ public class TournamentDetailsController {
 
     private TournamentResponse tournament;
 
+    /** Loads the tournament chosen in the Tournaments view (Session.selectedTournamentId) with GET /api/tournaments/{id} in the background. */
     @FXML
     private void initialize() {
         setActionsVisible(false);   // shown once we know whether the user may manage it
@@ -66,6 +67,7 @@ public class TournamentDetailsController {
         messageLabel.setText("");
     }
 
+    /** "Edit" button: edits name and dates, then calls PUT /api/tournaments/{id} in the background and refreshes the details. */
     @FXML
     private void handleEdit() {
         if (tournament == null) {
@@ -83,6 +85,7 @@ public class TournamentDetailsController {
         });
     }
 
+    /** "Advance Status" button: after a confirmation, moves the tournament one step forward with PUT /api/tournaments/{id}/status in the background. */
     @FXML
     private void handleAdvance() {
         if (tournament == null) {
@@ -102,6 +105,7 @@ public class TournamentDetailsController {
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "Delete" button: after a confirmation, calls DELETE /api/tournaments/{id} in the background and returns to the Tournaments view. */
     @FXML
     private void handleDelete() {
         if (tournament == null || !Ui.confirm("Delete Tournament", "Delete '" + tournament.name() + "'?")) {
@@ -120,6 +124,7 @@ public class TournamentDetailsController {
                 error -> Ui.error(messageLabel, error));
     }
 
+    /** "Back to Tournaments" button: returns to the Tournaments view. */
     @FXML
     private void handleBack() {
         goBack();

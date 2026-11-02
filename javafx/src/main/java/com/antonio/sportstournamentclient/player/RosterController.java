@@ -43,6 +43,7 @@ public class RosterController {
     private record Roster(TeamResponse team, List<PlayerResponse> players) {
     }
 
+    /** Binds the table columns and loads the roster of the team chosen in the Teams view. */
     @FXML
     private void initialize() {
         jerseyColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().jerseyNumber()));
@@ -62,6 +63,7 @@ public class RosterController {
         }
     }
 
+    /** Loads the team (to check who may manage it) and its players in one background call. */
     @FXML
     private void loadRoster() {
         Ui.info(rosterMessageLabel, "Loading players...");
@@ -84,6 +86,7 @@ public class RosterController {
         removePlayerButton.setDisable(true);
     }
 
+    /** "+ Add Player" button: asks for the player data, then calls POST /api/teams/{teamId}/players in the background. */
     @FXML
     private void handleAddPlayer() {
         PlayerDialog.askPlayer("Add Player", null).ifPresent(request ->
@@ -97,6 +100,7 @@ public class RosterController {
                         error -> Ui.error(rosterMessageLabel, error)));
     }
 
+    /** "Edit" button: edits the selected player in a dialog, then calls PUT /api/players/{id} in the background. */
     @FXML
     private void handleEditPlayer() {
         PlayerResponse player = playerTable.getSelectionModel().getSelectedItem();
@@ -113,6 +117,7 @@ public class RosterController {
                         error -> Ui.error(rosterMessageLabel, error)));
     }
 
+    /** "Remove" button: after a confirmation, calls DELETE /api/players/{id} for the selected player in the background. */
     @FXML
     private void handleRemovePlayer() {
         PlayerResponse player = playerTable.getSelectionModel().getSelectedItem();

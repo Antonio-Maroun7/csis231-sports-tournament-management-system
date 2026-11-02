@@ -13,10 +13,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
+    /**
+     * @param userRepository user table access
+     */
     public JpaUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Called by the JWT filter on every request, so a deleted user loses access immediately.
+     *
+     * @param email the email (JWT subject), compared ignoring case
+     * @return Spring Security user with the password hash and the authority {@code ROLE_<role name>}
+     * @throws UsernameNotFoundException if no user has this email
+     */
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

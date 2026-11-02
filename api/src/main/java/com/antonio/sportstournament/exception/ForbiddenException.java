@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /** Thrown by the services when a logged-in user is not allowed to touch a resource (HTTP 403). */
 @ResponseStatus(HttpStatus.FORBIDDEN)
 public class ForbiddenException extends RuntimeException {
+    /**
+     * @param message the text shown to the user in the {@code detail} field
+     */
     public ForbiddenException(String message) {
         super(message);
     }

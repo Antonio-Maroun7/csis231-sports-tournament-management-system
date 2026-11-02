@@ -25,6 +25,7 @@ public class SidebarController {
     @FXML private Label userNameLabel;
     @FXML private Label userRoleLabel;
 
+    /** Fills the user card (initials, name, role), hides the Users button for non-admins and highlights the current page. */
     @FXML
     private void initialize() {
         LoginResponse user = Session.getCurrentUser();
@@ -62,36 +63,43 @@ public class SidebarController {
         }
     }
 
+    /** "Dashboard" button: opens the dashboard view. */
     @FXML
     private void handleDashboard() throws IOException {
         SceneManager.switchScene("dashboard/dashboard-view.fxml");
     }
 
+    /** "Teams" button: opens the teams view. */
     @FXML
     private void handleTeams() throws IOException {
         SceneManager.switchScene("team/teams-view.fxml");
     }
 
+    /** "Players" button: opens the players view. */
     @FXML
     private void handlePlayers() throws IOException {
         SceneManager.switchScene("player/players-view.fxml");
     }
 
+    /** "Tournaments" button: opens the tournaments view. */
     @FXML
     private void handleTournaments() throws IOException {
         SceneManager.switchScene("tournament/tournaments-view.fxml");
     }
 
+    /** "Users" button (administrators only): opens the users view. */
     @FXML
     private void handleUsers() throws IOException {
         SceneManager.switchScene("user/users-view.fxml");
     }
 
+    /** "Security Settings" button: opens the security (two-factor settings) view. */
     @FXML
     private void handleSecurity() throws IOException {
         SceneManager.switchScene("security/security-view.fxml");
     }
 
+    /** "Logout" button: clears the Session (user and JWT) and returns to the login view. */
     @FXML
     private void handleLogout() throws IOException {
         Session.clear();
