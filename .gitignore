@@ -9,6 +9,11 @@ target/
 .env
 .env.*
 
+# local secrets - never commit
+.env
+**/.env
+!api/.env.example
+
 # Logs
 *.log
 
