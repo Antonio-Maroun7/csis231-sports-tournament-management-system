@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Security Settings View (proposal mockup 03): 2FA by email code instead of an authenticator app -->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.antonio.sportstournamentclient.security.SecurityController">
+    <left>
+        <fx:include source="../core/sidebar.fxml"/>
+    </left>
+
+    <center>
+        <VBox styleClass="page" spacing="18">
+            <VBox>
+                <Label text="Security Settings" styleClass="page-title"/>
+                <Label text="Manage two-factor authentication" styleClass="page-subtitle"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="12" maxWidth="760">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="Two-Factor Authentication" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="statusBadge" styleClass="badge"/>
+                </HBox>
+
+                <Label text="Email code" styleClass="security-method"/>
+                <Label fx:id="descriptionLabel" wrapText="true"/>
+
+                <Label fx:id="requiredLabel" styleClass="info-box" wrapText="true" maxWidth="Infinity"
+                       text="Two-factor authentication is required for Administrators and Organizers, so it cannot be turned off."/>
+
+                <HBox>
+                    <VBox.margin><Insets top="8"/></VBox.margin>
+                    <Button fx:id="toggleButton" onAction="#handleToggle" prefWidth="170"/>
+                </HBox>
+                <Label fx:id="messageLabel" wrapText="true"/>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

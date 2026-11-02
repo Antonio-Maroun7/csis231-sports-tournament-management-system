@@ -294,3 +294,39 @@
     -fx-padding: 14 16 14 16;
     -fx-text-fill: #1d2733;
 }
+
+/* ---------- two-factor authentication (mockups 02 and 03) ---------- */
+.twofa-icon {
+    -fx-background-color: #e8f0fe;
+    -fx-background-radius: 22;
+    -fx-text-fill: -blue;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-min-width: 104;
+    -fx-min-height: 104;
+    -fx-alignment: center;
+}
+.code-digit {
+    -fx-pref-width: 58;
+    -fx-pref-height: 68;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: -border;
+    -fx-border-radius: 10;
+    -fx-border-width: 2;
+}
+.code-digit:focused {
+    -fx-border-color: -blue;
+}
+.auth-hint {
+    -fx-text-fill: -muted;
+    -fx-font-size: 12px;
+}
+.security-method {
+    -fx-text-fill: -muted;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}

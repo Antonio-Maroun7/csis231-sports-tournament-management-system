@@ -4,6 +4,8 @@ import com.antonio.sportstournament.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -18,8 +20,10 @@ public class TwoFactorChallenge {
     @Column(name = "challenge_id")
     private Long id;
 
+    // deleting a user also deletes their old 2FA challenges (otherwise the delete fails with 409)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Column(nullable = false, unique = true, length = 36)

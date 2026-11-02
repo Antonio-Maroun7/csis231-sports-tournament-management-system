@@ -1,6 +1,6 @@
 package com.antonio.sportstournamentclient.auth;
 
-import com.antonio.sportstournamentclient.auth.dto.LoginResponse;
+import com.antonio.sportstournamentclient.auth.dto.AuthResult;
 import com.antonio.sportstournamentclient.core.ApiException;
 import com.antonio.sportstournamentclient.core.SceneManager;
 import com.antonio.sportstournamentclient.core.Session;
@@ -15,7 +15,9 @@ import javafx.scene.control.TextField;
 import java.io.IOException;
 
 /**
- * Login View: email + password -> POST /api/auth/login -> Dashboard.
+ * Login View: email + password -> POST /api/auth/login.
+ * Without 2FA -> Dashboard. With 2FA (always for Admins/Organizers) -> Two-Factor view,
+ * where the user types the 6-digit code that was emailed to them.
  * Written exactly like the instructor's LoginController (Task on a daemon thread).
  */
 public class LoginController {
@@ -43,20 +45,27 @@ public class LoginController {
         loginButton.setDisable(true);
 
         // call the api in the background. prevent UI freezing.
-        Task<LoginResponse> task = new Task<>() {
+        Task<AuthResult> task = new Task<>() {
             @Override
-            protected LoginResponse call() {
+            protected AuthResult call() {
                 return AuthApi.login(email, password);
             }
         };
 
         task.setOnSucceeded(e -> {
-            Session.setCurrentUser(task.getValue());
+            AuthResult result = task.getValue();
             try {
-                SceneManager.switchScene("dashboard/dashboard-view.fxml");
+                if (result.twoFactorRequired()) {
+                    // a 6-digit code was emailed: ask for it on the Two-Factor view
+                    Session.setPendingChallenge(result);
+                    SceneManager.switchScene("auth/two-factor-view.fxml");
+                } else {
+                    Session.setCurrentUser(result.user());
+                    SceneManager.switchScene("dashboard/dashboard-view.fxml");
+                }
             } catch (IOException ex) {
                 loginButton.setDisable(false);
-                Ui.error(messageLabel, "Could not open the Dashboard: " + ex.getMessage());
+                Ui.error(messageLabel, "Could not open the next screen: " + ex.getMessage());
             }
         });
 

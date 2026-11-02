@@ -25,6 +25,8 @@
 
     <Region VBox.vgrow="ALWAYS"/>
 
+    <Button fx:id="securityButton" text="Security Settings" onAction="#handleSecurity" styleClass="nav-button" maxWidth="Infinity"/>
+
     <HBox styleClass="sidebar-user" spacing="10">
         <Label fx:id="avatarLabel" styleClass="avatar"/>
         <VBox>

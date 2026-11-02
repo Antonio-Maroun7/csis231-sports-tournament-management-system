@@ -25,6 +25,7 @@ module com.antonio.sportstournamentclient {
     opens com.antonio.sportstournamentclient.tournament to javafx.fxml;
     opens com.antonio.sportstournamentclient.registration to javafx.fxml;
     opens com.antonio.sportstournamentclient.user to javafx.fxml;
+    opens com.antonio.sportstournamentclient.security to javafx.fxml;
 
     // request / response records read and written by Jackson
     opens com.antonio.sportstournamentclient.auth.dto to com.fasterxml.jackson.databind;

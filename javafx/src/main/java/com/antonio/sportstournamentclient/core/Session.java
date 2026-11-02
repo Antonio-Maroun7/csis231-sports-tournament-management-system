@@ -1,5 +1,6 @@
 package com.antonio.sportstournamentclient.core;
 
+import com.antonio.sportstournamentclient.auth.dto.AuthResult;
 import com.antonio.sportstournamentclient.auth.dto.LoginResponse;
 
 /**
@@ -7,6 +8,9 @@ import com.antonio.sportstournamentclient.auth.dto.LoginResponse;
  */
 public class Session {
     private static LoginResponse currentUser;
+
+    // login waiting for its emailed 2FA code (set by the Login view, used by the 2FA view)
+    private static AuthResult pendingChallenge;
 
     // team chosen in the Teams view, shown by the Team Details view
     private static Long selectedTeamId;
@@ -20,6 +24,14 @@ public class Session {
 
     public static LoginResponse getCurrentUser() {
         return currentUser;
+    }
+
+    public static AuthResult getPendingChallenge() {
+        return pendingChallenge;
+    }
+
+    public static void setPendingChallenge(AuthResult challenge) {
+        pendingChallenge = challenge;
     }
 
     public static Long getSelectedTeamId() {
@@ -40,6 +52,7 @@ public class Session {
 
     public static void clear() {
         currentUser = null;
+        pendingChallenge = null;
         selectedTeamId = null;
         selectedTournamentId = null;
     }

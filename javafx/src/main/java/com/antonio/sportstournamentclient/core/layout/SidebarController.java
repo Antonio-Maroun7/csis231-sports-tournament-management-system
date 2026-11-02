@@ -20,6 +20,7 @@ public class SidebarController {
     @FXML private Button playersButton;
     @FXML private Button tournamentsButton;
     @FXML private Button usersButton;
+    @FXML private Button securityButton;
     @FXML private Label avatarLabel;
     @FXML private Label userNameLabel;
     @FXML private Label userRoleLabel;
@@ -56,6 +57,8 @@ public class SidebarController {
             tournamentsButton.getStyleClass().add("active");
         } else if (view.startsWith("user/")) {
             usersButton.getStyleClass().add("active");
+        } else if (view.startsWith("security/")) {
+            securityButton.getStyleClass().add("active");
         }
     }
 
@@ -82,6 +85,11 @@ public class SidebarController {
     @FXML
     private void handleUsers() throws IOException {
         SceneManager.switchScene("user/users-view.fxml");
+    }
+
+    @FXML
+    private void handleSecurity() throws IOException {
+        SceneManager.switchScene("security/security-view.fxml");
     }
 
     @FXML
