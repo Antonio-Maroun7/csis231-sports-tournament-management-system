@@ -53,7 +53,7 @@ public class SecurityController {
                 updated -> {
                     // keep the Session in sync with the server
                     Session.setCurrentUser(new LoginResponse(user.id(), user.name(), user.email(),
-                            user.role(), updated.twoFactorEnabled()));
+                            user.role(), updated.twoFactorEnabled(), user.token()));
                     show(updated.twoFactorEnabled());
                     Ui.success(messageLabel, updated.twoFactorEnabled()
                             ? "2FA is on. Next time you log in, we will email you a code."

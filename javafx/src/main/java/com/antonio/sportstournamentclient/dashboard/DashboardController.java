@@ -85,9 +85,8 @@ public class DashboardController {
     @FXML
     private void handleCreateTeam() {
         TeamDialog.askTeamName("Create Team", "").ifPresent(name -> {
-            Long me = Session.getCurrentUser().id();
             BackgroundTask.run(
-                    () -> TeamApi.create(new TeamRequest(name, me)),
+                    () -> TeamApi.create(new TeamRequest(name)),
                     created -> {
                         Ui.success(messageLabel, "Team '" + created.teamName() + "' created");
                         loadTeamCount();

@@ -104,8 +104,7 @@ public class TournamentsController {
     @FXML
     private void handleCreate() {
         TournamentDialog.askTournament("Create Tournament", null).ifPresent(form -> {
-            Long me = Session.getCurrentUser().id();
-            TournamentRequest request = new TournamentRequest(form.name(), form.startDate(), form.endDate(), me);
+            TournamentRequest request = new TournamentRequest(form.name(), form.startDate(), form.endDate());
             BackgroundTask.run(
                     () -> TournamentApi.create(request),
                     created -> {
@@ -124,8 +123,7 @@ public class TournamentsController {
         }
         TournamentDialog.askTournament("Edit Tournament", tournament).ifPresent(form -> {
             // the organizer (owner) does not change when editing
-            TournamentRequest request = new TournamentRequest(form.name(), form.startDate(), form.endDate(),
-                    tournament.organizerId());
+            TournamentRequest request = new TournamentRequest(form.name(), form.startDate(), form.endDate());
             BackgroundTask.run(
                     () -> TournamentApi.update(tournament.id(), request),
                     updated -> {

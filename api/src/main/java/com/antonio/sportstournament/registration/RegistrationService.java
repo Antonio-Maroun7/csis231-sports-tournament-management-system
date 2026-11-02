@@ -1,6 +1,7 @@
 package com.antonio.sportstournament.registration;
 
 import com.antonio.sportstournament.exception.ConflictException;
+import com.antonio.sportstournament.exception.ForbiddenException;
 import com.antonio.sportstournament.exception.ResourceNotFoundException;
 import com.antonio.sportstournament.registration.dto.RegistrationResponse;
 import com.antonio.sportstournament.team.Team;
@@ -8,6 +9,8 @@ import com.antonio.sportstournament.team.TeamService;
 import com.antonio.sportstournament.tournament.Tournament;
 import com.antonio.sportstournament.tournament.TournamentService;
 import com.antonio.sportstournament.tournament.TournamentStatus;
+import com.antonio.sportstournament.user.Role;
+import com.antonio.sportstournament.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,10 +55,13 @@ public class RegistrationService {
     }
 
     @Transactional
-    public RegistrationResponse register(Long tournamentId, Long teamId) {
+    public RegistrationResponse register(User caller, Long tournamentId, Long teamId) {
         Tournament tournament = tournamentService.findEntity(tournamentId);
         Team team = teamService.findEntity(teamId);
 
+        if (caller.getRole() != Role.ADMIN && !team.getManager().getId().equals(caller.getId())) {
+            throw new ForbiddenException("You can only register your own teams.");
+        }
         // Rule 1: registration only while the tournament is OPEN
         if (tournament.getStatus() != TournamentStatus.OPEN) {
             throw new ConflictException("'" + tournament.getName() + "' is not open for registration (status: "
@@ -72,20 +78,21 @@ public class RegistrationService {
 
     /** Rule 3: the Organizer approves a PENDING registration. */
     @Transactional
-    public RegistrationResponse approve(Long id) {
-        return decide(id, RegistrationStatus.APPROVED);
+    public RegistrationResponse approve(User caller, Long id) {
+        return decide(caller, id, RegistrationStatus.APPROVED);
     }
 
     /** Rule 3: the Organizer rejects a PENDING registration. */
     @Transactional
-    public RegistrationResponse reject(Long id) {
-        return decide(id, RegistrationStatus.REJECTED);
+    public RegistrationResponse reject(User caller, Long id) {
+        return decide(caller, id, RegistrationStatus.REJECTED);
     }
 
     /** Rule 4: a team can withdraw only while registration is still open. */
     @Transactional
-    public void withdraw(Long id) {
+    public void withdraw(User caller, Long id) {
         TournamentTeam registration = findEntity(id);
+        teamService.requireManagerOrAdmin(caller, registration.getTeam());
         if (registration.getTournament().getStatus() != TournamentStatus.OPEN) {
             throw new ConflictException("A team can only withdraw while registration is open");
         }
@@ -95,8 +102,9 @@ public class RegistrationService {
     /**
      * Helpers
      */
-    private RegistrationResponse decide(Long id, RegistrationStatus decision) {
+    private RegistrationResponse decide(User caller, Long id, RegistrationStatus decision) {
         TournamentTeam registration = findEntity(id);
+        tournamentService.requireOrganizerOrAdmin(caller, registration.getTournament());
         if (registration.getStatus() != RegistrationStatus.PENDING) {
             throw new ConflictException("Only a PENDING registration can be " + decision.name().toLowerCase()
                     + " (this one is " + registration.getStatus() + ")");

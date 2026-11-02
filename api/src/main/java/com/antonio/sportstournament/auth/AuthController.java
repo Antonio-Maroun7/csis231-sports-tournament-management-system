@@ -6,7 +6,6 @@ import com.antonio.sportstournament.auth.dto.RegisterRequest;
 import com.antonio.sportstournament.auth.dto.AuthResult;
 import com.antonio.sportstournament.auth.dto.ResendCodeRequest;
 import com.antonio.sportstournament.auth.dto.VerifyTwoFactorRequest;
-import com.antonio.sportstournament.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse register(@Valid @RequestBody RegisterRequest request){
+    public LoginResponse register(@Valid @RequestBody RegisterRequest request){
         return service.register(request);
     }
 

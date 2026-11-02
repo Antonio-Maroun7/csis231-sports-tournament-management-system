@@ -9,6 +9,8 @@ public record LoginResponse(
         String name,
         String email,
         String role,
-        boolean twoFactorEnabled
+        boolean twoFactorEnabled,
+        // JWT for the Authorization header; null while a 2FA code is still required
+        String token
 ) {
 }

@@ -6,6 +6,7 @@ import com.antonio.sportstournament.player.dto.PlayerRequest;
 import com.antonio.sportstournament.player.dto.PlayerResponse;
 import com.antonio.sportstournament.team.Team;
 import com.antonio.sportstournament.team.TeamService;
+import com.antonio.sportstournament.user.User;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +42,9 @@ public class PlayerService {
     }
 
     @Transactional
-    public PlayerResponse add(Long teamId, PlayerRequest request) {
+    public PlayerResponse add(User caller, Long teamId, PlayerRequest request) {
         Team team = teamService.findEntity(teamId);
+        teamService.requireManagerOrAdmin(caller, team);
         if (repository.existsByTeamIdAndJerseyNumber(teamId, request.jerseyNumber())) {
             throw new ConflictException("Jersey number " + request.jerseyNumber()
                     + " is already taken on " + team.getTeamName());
@@ -52,9 +54,10 @@ public class PlayerService {
     }
 
     @Transactional
-    public PlayerResponse update(Long id, PlayerRequest request) {
+    public PlayerResponse update(User caller, Long id, PlayerRequest request) {
         Player player = findEntity(id);
         Team team = player.getTeam();
+        teamService.requireManagerOrAdmin(caller, team);
         if (repository.existsByTeamIdAndJerseyNumberAndIdNot(team.getId(), request.jerseyNumber(), id)) {
             throw new ConflictException("Jersey number " + request.jerseyNumber()
                     + " is already taken on " + team.getTeamName());
@@ -64,8 +67,10 @@ public class PlayerService {
     }
 
     @Transactional
-    public void remove(Long id) {
-        repository.delete(findEntity(id));
+    public void remove(User caller, Long id) {
+        Player player = findEntity(id);
+        teamService.requireManagerOrAdmin(caller, player.getTeam());
+        repository.delete(player);
     }
 
     /**

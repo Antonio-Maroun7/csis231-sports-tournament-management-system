@@ -11,4 +11,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     // "email already exists" check
     boolean existsByEmailIgnoreCase(String email);
+
+    // used by the bootstrap admin
+    boolean existsByRole(Role role);
 }

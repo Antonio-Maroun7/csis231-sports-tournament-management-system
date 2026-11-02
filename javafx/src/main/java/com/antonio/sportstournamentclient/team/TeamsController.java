@@ -85,10 +85,9 @@ public class TeamsController {
     @FXML
     private void handleCreate() {
         TeamDialog.askTeamName("Create Team", "").ifPresent(name -> {
-            Long me = Session.getCurrentUser().id();
             createButton.setDisable(true);
             BackgroundTask.run(
-                    () -> TeamApi.create(new TeamRequest(name, me)),
+                    () -> TeamApi.create(new TeamRequest(name)),
                     created -> {
                         createButton.setDisable(false);
                         Ui.success(messageLabel, "Team '" + created.teamName() + "' created");
@@ -109,8 +108,8 @@ public class TeamsController {
         }
         TeamDialog.askTeamName("Edit Team", team.teamName()).ifPresent(name ->
                 BackgroundTask.run(
-                        // keep the same manager, only the name changes
-                        () -> TeamApi.update(team.id(), new TeamRequest(name, team.managerId())),
+                        // the manager never changes, only the name
+                        () -> TeamApi.update(team.id(), new TeamRequest(name)),
                         updated -> {
                             Ui.success(messageLabel, "Team renamed to '" + updated.teamName() + "'");
                             loadTeams();

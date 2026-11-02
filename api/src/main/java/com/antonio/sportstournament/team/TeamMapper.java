@@ -18,9 +18,8 @@ public class TeamMapper {
         return team;
     }
 
-    public void updateEntity(Team team, TeamRequest request, User manager) {
+    public void updateEntity(Team team, TeamRequest request) {
         team.setTeamName(request.teamName().trim());
-        team.setManager(manager);
     }
 
     public TeamResponse toResponse(Team team) {

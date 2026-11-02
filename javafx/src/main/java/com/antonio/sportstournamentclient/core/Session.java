@@ -18,12 +18,29 @@ public class Session {
     // tournament chosen in the Tournaments view, shown by the Tournament Details view
     private static Long selectedTournamentId;
 
+    private static String flashMessage;
     public static void setCurrentUser(LoginResponse user) {
         currentUser = user;
     }
 
     public static LoginResponse getCurrentUser() {
         return currentUser;
+    }
+
+    /** The JWT of the logged-in user (kept in memory only, never saved to disk), or null. */
+    public static String getToken() {
+        return currentUser == null ? null : currentUser.token();
+    }
+
+    /** One-shot message shown once on the Login view (e.g. "session expired"), then forgotten. */
+    public static void setFlashMessage(String message) {
+        flashMessage = message;
+    }
+
+    public static String consumeFlashMessage() {
+        String message = flashMessage;
+        flashMessage = null;
+        return message;
     }
 
     public static AuthResult getPendingChallenge() {

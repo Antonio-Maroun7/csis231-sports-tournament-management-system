@@ -7,6 +7,7 @@ import com.antonio.sportstournament.auth.dto.ResendCodeRequest;
 import com.antonio.sportstournament.auth.dto.VerifyTwoFactorRequest;
 import com.antonio.sportstournament.auth.dto.RegisterRequest;
 import com.antonio.sportstournament.exception.UnauthorizedException;
+import com.antonio.sportstournament.security.JwtService;
 import com.antonio.sportstournament.user.Role;
 import com.antonio.sportstournament.user.User;
 import com.antonio.sportstournament.user.UserMapper;
@@ -14,9 +15,9 @@ import com.antonio.sportstournament.user.UserRepository;
 import com.antonio.sportstournament.user.UserService;
 import com.antonio.sportstournament.user.dto.UserCreateRequest;
 import com.antonio.sportstournament.user.dto.UserResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class AuthService {
@@ -25,21 +26,28 @@ public class AuthService {
     private final UserService userService;
     private final UserMapper mapper;
     private final TwoFactorService twoFactorService;
-    private final  BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AuthService(UserRepository repository,UserService service,UserMapper mapper,
-                       TwoFactorService twoFactorService){
+                       TwoFactorService twoFactorService, PasswordEncoder passwordEncoder,
+                       JwtService jwtService){
         this.userRepository=repository;
         this.userService=service;
         this.mapper=mapper;
         this.twoFactorService = twoFactorService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
+    /** Creates a Team Manager and logs them in directly (new accounts have no 2FA). */
     @Transactional
-    public UserResponse register(RegisterRequest request){
-        return userService.create(new UserCreateRequest(
+    public LoginResponse register(RegisterRequest request){
+        UserResponse created = userService.create(new UserCreateRequest(
                 request.name(), request.email(), request.password(), Role.TEAM_MANAGER)
         );
+        return new LoginResponse(created.id(), created.name(), created.email(), created.role().name(),
+                created.twoFactorEnabled(), jwtService.generateToken(created.email()));
     }
 
     @Transactional
@@ -52,9 +60,10 @@ public class AuthService {
         }
 
         if (user.getRole() == Role.ADMIN || user.getRole() == Role.ORGANIZER || user.isTwoFactorEnabled()) {
-            return twoFactorService.createChallenge(user);
+            return twoFactorService.createChallenge(user);   // no token until the code is verified
         }
-        return new AuthResult(false, null, null, null, mapper.toLoginResponse(user));
+        return new AuthResult(false, null, null, null,
+                mapper.toLoginResponse(user, jwtService.generateToken(user.getEmail())));
     }
 
     @Transactional(noRollbackFor = UnauthorizedException.class)

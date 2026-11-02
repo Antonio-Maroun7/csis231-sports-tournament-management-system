@@ -27,6 +27,14 @@ public class LoginController {
     @FXML private Label messageLabel;
 
     @FXML
+    private void initialize() {
+        // e.g. "Your session has expired" after a 401; shown once
+        String flash = Session.consumeFlashMessage();
+        if (flash != null) {
+            Ui.info(messageLabel, flash);
+        }
+    }
+    @FXML
     private void handleLogin() {
         String email = emailField.getText().trim();
         String password = passwordField.getText();

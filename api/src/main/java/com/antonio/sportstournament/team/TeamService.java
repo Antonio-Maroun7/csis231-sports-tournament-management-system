@@ -1,6 +1,6 @@
 package com.antonio.sportstournament.team;
 
-import com.antonio.sportstournament.exception.BadRequestException;
+import com.antonio.sportstournament.exception.ForbiddenException;
 import com.antonio.sportstournament.exception.ResourceNotFoundException;
 import com.antonio.sportstournament.team.dto.TeamRequest;
 import com.antonio.sportstournament.team.dto.TeamResponse;
@@ -28,9 +28,12 @@ public class TeamService {
     }
 
     @Transactional
-    public TeamResponse create(TeamRequest request) {
-        User manager = findManager(request.managerId());
-        Team team = mapper.toEntity(request, manager);
+    public TeamResponse create(User caller, TeamRequest request) {
+        // Business rule: a team can only be managed by a TEAM_MANAGER (or an ADMIN)
+        if (caller.getRole() != Role.TEAM_MANAGER && caller.getRole() != Role.ADMIN) {
+            throw new ForbiddenException("Only Team Managers can create teams.");
+        }
+        Team team = mapper.toEntity(request, caller);   // the caller becomes the manager
         return mapper.toResponse(repository.save(team));
     }
 
@@ -55,10 +58,10 @@ public class TeamService {
     }
 
     @Transactional
-    public TeamResponse update(Long id, TeamRequest request) {
+    public TeamResponse update(User caller, Long id, TeamRequest request) {
         Team team = findEntity(id);
-        User manager = findManager(request.managerId());
-        mapper.updateEntity(team, request, manager);
+        requireManagerOrAdmin(caller, team);
+        mapper.updateEntity(team, request);   // the manager never changes
         return mapper.toResponse(repository.save(team));
     }
 
@@ -67,8 +70,9 @@ public class TeamService {
      * blocks the delete and GlobalExceptionHandler returns 409 CONFLICT.
      */
     @Transactional
-    public void delete(Long id) {
+    public void delete(User caller, Long id) {
         Team team = findEntity(id);
+        requireManagerOrAdmin(caller, team);
         repository.delete(team);
     }
 
@@ -80,12 +84,10 @@ public class TeamService {
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found " + id));
     }
 
-    // Business rule: a team can only be managed by a TEAM_MANAGER (or an ADMIN)
-    private User findManager(Long managerId) {
-        User manager = userService.findEntity(managerId);   // 404 if not found
-        if (manager.getRole() != Role.TEAM_MANAGER && manager.getRole() != Role.ADMIN) {
-            throw new BadRequestException("User " + managerId + " is not a Team Manager");
+    /** Ownership rule shared by the team, player and registration features. */
+    public void requireManagerOrAdmin(User caller, Team team) {
+        if (caller.getRole() != Role.ADMIN && !team.getManager().getId().equals(caller.getId())) {
+            throw new ForbiddenException("Only the team's manager can change this team.");
         }
-        return manager;
     }
 }

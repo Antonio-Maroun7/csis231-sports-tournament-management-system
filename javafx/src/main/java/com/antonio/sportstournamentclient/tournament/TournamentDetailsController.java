@@ -72,8 +72,7 @@ public class TournamentDetailsController {
             return;
         }
         TournamentDialog.askTournament("Edit Tournament", tournament).ifPresent(form -> {
-            TournamentRequest request = new TournamentRequest(form.name(), form.startDate(), form.endDate(),
-                    tournament.organizerId());
+            TournamentRequest request = new TournamentRequest(form.name(), form.startDate(), form.endDate());
             BackgroundTask.run(
                     () -> TournamentApi.update(tournament.id(), request),
                     updated -> {

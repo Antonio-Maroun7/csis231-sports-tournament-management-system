@@ -29,13 +29,17 @@ public class UserMapper {
     }
 
     public LoginResponse toLoginResponse(User user){
+        return toLoginResponse(user, null);
+    }
+
+    public LoginResponse toLoginResponse(User user, String token){
         return new LoginResponse(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.getRole().name(),
-                user.isTwoFactorEnabled()
-
+                user.isTwoFactorEnabled(),
+                token
         );
     }
 

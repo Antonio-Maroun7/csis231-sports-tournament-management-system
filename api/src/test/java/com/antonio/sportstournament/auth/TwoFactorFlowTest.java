@@ -1,6 +1,7 @@
 package com.antonio.sportstournament.auth;
 
 import com.antonio.sportstournament.email.EmailService;
+import com.antonio.sportstournament.security.JwtService;
 import com.antonio.sportstournament.user.Role;
 import com.antonio.sportstournament.user.UserRepository;
 import com.antonio.sportstournament.user.UserService;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TwoFactorFlowTest {
     @Autowired MockMvc mockMvc;
     @Autowired UserService userService;
+    @Autowired JwtService jwtService;
     @Autowired UserRepository userRepository;
     @Autowired TwoFactorChallengeRepository challengeRepository;
 
@@ -51,7 +53,8 @@ class TwoFactorFlowTest {
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.twoFactorRequired").value(false))
-                .andExpect(jsonPath("$.user.email").value("manager@example.com"));
+                .andExpect(jsonPath("$.user.email").value("manager@example.com"))
+                .andExpect(jsonPath("$.user.token").isNotEmpty());
         verifyNoInteractions(emailService);
     }
 
@@ -72,7 +75,8 @@ class TwoFactorFlowTest {
         mockMvc.perform(post("/api/auth/verify-2fa").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"challengeToken\":\"" + token + "\",\"code\":\"" + code + "\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("organizer@example.com"));
+                .andExpect(jsonPath("$.email").value("organizer@example.com"))
+                .andExpect(jsonPath("$.token").isNotEmpty());
 
         mockMvc.perform(post("/api/auth/verify-2fa").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"challengeToken\":\"" + token + "\",\"code\":\"" + code + "\"}"))
@@ -101,6 +105,7 @@ class TwoFactorFlowTest {
                 new UserCreateRequest("Organizer", "protected@example.com", "password", Role.ORGANIZER));
 
         mockMvc.perform(put("/api/users/" + organizer.id() + "/two-factor")
+                        .header("Authorization", "Bearer " + jwtService.generateToken("protected@example.com"))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"enabled\":false}"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail")

@@ -1,11 +1,12 @@
 package com.antonio.sportstournament.user;
 
 import com.antonio.sportstournament.exception.ConflictException;
+import com.antonio.sportstournament.exception.ForbiddenException;
 import com.antonio.sportstournament.exception.ResourceNotFoundException;
 import com.antonio.sportstournament.user.dto.UserCreateRequest;
 import com.antonio.sportstournament.user.dto.UserResponse;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +17,12 @@ import java.util.List;
 public class UserService {
      private final UserRepository repository;
      private final UserMapper mapper;
-     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+     private final PasswordEncoder passwordEncoder;
 
-     public UserService(UserRepository repository,UserMapper mapper){
+     public UserService(UserRepository repository,UserMapper mapper,PasswordEncoder passwordEncoder){
          this.repository=repository;
          this.mapper = mapper;
+         this.passwordEncoder = passwordEncoder;
      }
 
      @Transactional
@@ -49,21 +51,31 @@ public class UserService {
      }
 
      @Transactional
-     public UserResponse updateTwoFactor(Long id, boolean enabled){
+     public UserResponse updateTwoFactor(User caller, Long id, boolean enabled){
+         if (!caller.getId().equals(id)) {
+             throw new ForbiddenException("You can only change your own security settings.");
+         }
          User user = findEntity(id);
          if (!enabled && (user.getRole() == Role.ADMIN || user.getRole() == Role.ORGANIZER)) {
              throw new ConflictException("2FA is required for Administrators and Organizers");
          }
-         // TODO Step 11 (JWT): only the user themself may change this.
          user.setTwoFactorEnabled(enabled);
          return mapper.toResponse(repository.save(user));
      }
 
     @Transactional
-     public void  delete(Long id ){
+     public void delete(User caller, Long id){
+         if (caller.getId().equals(id)) {
+             throw new ConflictException("You cannot delete your own account.");
+         }
          User user = findEntity(id);
          repository.delete(user);
      }
+
+    /** The profile of the logged-in user (GET /api/users/me). */
+    public UserResponse toResponse(User user) {
+        return mapper.toResponse(user);
+    }
 
 
 

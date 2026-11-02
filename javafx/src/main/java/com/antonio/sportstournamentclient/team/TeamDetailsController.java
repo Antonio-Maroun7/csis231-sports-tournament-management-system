@@ -63,7 +63,7 @@ public class TeamDetailsController {
         }
         TeamDialog.askTeamName("Edit Team", team.teamName()).ifPresent(name ->
                 BackgroundTask.run(
-                        () -> TeamApi.update(team.id(), new TeamRequest(name, team.managerId())),
+                        () -> TeamApi.update(team.id(), new TeamRequest(name)),
                         updated -> {
                             showTeam(updated);
                             Ui.success(messageLabel, "Team updated");

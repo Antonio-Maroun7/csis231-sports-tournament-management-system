@@ -2,12 +2,12 @@ package com.antonio.sportstournament.tournament;
 
 import com.antonio.sportstournament.exception.BadRequestException;
 import com.antonio.sportstournament.exception.ConflictException;
+import com.antonio.sportstournament.exception.ForbiddenException;
 import com.antonio.sportstournament.exception.ResourceNotFoundException;
 import com.antonio.sportstournament.tournament.dto.TournamentRequest;
 import com.antonio.sportstournament.tournament.dto.TournamentResponse;
 import com.antonio.sportstournament.user.Role;
 import com.antonio.sportstournament.user.User;
-import com.antonio.sportstournament.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,20 +21,21 @@ import java.util.List;
 @Service
 public class TournamentService {
     private final TournamentRepository repository;
-    private final UserService userService;   // the tournament feature uses the user feature
     private final TournamentMapper mapper;
 
-    public TournamentService(TournamentRepository repository, UserService userService, TournamentMapper mapper) {
+    public TournamentService(TournamentRepository repository, TournamentMapper mapper) {
         this.repository = repository;
-        this.userService = userService;
         this.mapper = mapper;
     }
 
     @Transactional
-    public TournamentResponse create(TournamentRequest request) {
+    public TournamentResponse create(User caller, TournamentRequest request) {
+        // Rule 2: only an ORGANIZER (or an ADMIN) can own a tournament
+        if (caller.getRole() != Role.ORGANIZER && caller.getRole() != Role.ADMIN) {
+            throw new ForbiddenException("Only Organizers can create tournaments.");
+        }
         validateDates(request);
-        User organizer = findOrganizer(request.organizerId());
-        Tournament tournament = mapper.toEntity(request, organizer);
+        Tournament tournament = mapper.toEntity(request, caller);   // the caller becomes the organizer
         return mapper.toResponse(repository.save(tournament));
     }
 
@@ -58,14 +59,13 @@ public class TournamentService {
     }
 
     @Transactional
-    public TournamentResponse update(Long id, TournamentRequest request) {
+    public TournamentResponse update(User caller, Long id, TournamentRequest request) {
         Tournament tournament = findEntity(id);
+        requireOrganizerOrAdmin(caller, tournament);
         if (tournament.getStatus() == TournamentStatus.COMPLETED) {
             throw new ConflictException("A completed tournament cannot be edited");
         }
         validateDates(request);
-        // the organizer must still be a valid Organizer/Admin, but ownership does not change here
-        findOrganizer(request.organizerId());
         mapper.updateEntity(tournament, request);
         return mapper.toResponse(repository.save(tournament));
     }
@@ -75,8 +75,9 @@ public class TournamentService {
      * DRAFT -> OPEN -> IN_PROGRESS -> COMPLETED.
      */
     @Transactional
-    public TournamentResponse changeStatus(Long id, TournamentStatus newStatus) {
+    public TournamentResponse changeStatus(User caller, Long id, TournamentStatus newStatus) {
         Tournament tournament = findEntity(id);
+        requireOrganizerOrAdmin(caller, tournament);
         TournamentStatus current = tournament.getStatus();
         if (newStatus.ordinal() != current.ordinal() + 1) {
             throw new ConflictException("Cannot change status from " + current + " to " + newStatus
@@ -93,8 +94,9 @@ public class TournamentService {
      * block the delete and GlobalExceptionHandler returns 409 CONFLICT.
      */
     @Transactional
-    public void delete(Long id) {
+    public void delete(User caller, Long id) {
         Tournament tournament = findEntity(id);
+        requireOrganizerOrAdmin(caller, tournament);
         repository.delete(tournament);
     }
 
@@ -106,19 +108,17 @@ public class TournamentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Tournament not found " + id));
     }
 
+    /** Ownership rule shared by the tournament and registration features. */
+    public void requireOrganizerOrAdmin(User caller, Tournament tournament) {
+        if (caller.getRole() != Role.ADMIN && !tournament.getOrganizer().getId().equals(caller.getId())) {
+            throw new ForbiddenException("Only the tournament's organizer can change this tournament.");
+        }
+    }
+
     // Rule 1: the end date cannot be before the start date
     private void validateDates(TournamentRequest request) {
         if (request.endDate().isBefore(request.startDate())) {
             throw new BadRequestException("End date must be on or after the start date");
         }
-    }
-
-    // Rule 2: only an ORGANIZER (or an ADMIN) can own a tournament
-    private User findOrganizer(Long organizerId) {
-        User organizer = userService.findEntity(organizerId);   // 404 if not found
-        if (organizer.getRole() != Role.ORGANIZER && organizer.getRole() != Role.ADMIN) {
-            throw new BadRequestException("User " + organizerId + " is not an Organizer");
-        }
-        return organizer;
     }
 }

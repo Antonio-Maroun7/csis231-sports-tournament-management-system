@@ -2,8 +2,10 @@ package com.antonio.sportstournament.registration;
 
 import com.antonio.sportstournament.registration.dto.RegistrationRequest;
 import com.antonio.sportstournament.registration.dto.RegistrationResponse;
+import com.antonio.sportstournament.security.CurrentUserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +23,11 @@ import java.util.List;
 @RequestMapping("/api")
 public class RegistrationController {
     private final RegistrationService service;
+    private final CurrentUserService currentUserService;
 
-    public RegistrationController(RegistrationService service) {
+    public RegistrationController(RegistrationService service, CurrentUserService currentUserService) {
         this.service = service;
+        this.currentUserService = currentUserService;
     }
 
     @GetMapping("/tournaments/{tournamentId}/registrations")
@@ -34,8 +38,9 @@ public class RegistrationController {
     @PostMapping("/tournaments/{tournamentId}/registrations")
     @ResponseStatus(HttpStatus.CREATED)
     public RegistrationResponse register(@PathVariable Long tournamentId,
-                                         @Valid @RequestBody RegistrationRequest request) {
-        return service.register(tournamentId, request.teamId());
+                                         @Valid @RequestBody RegistrationRequest request,
+                                         Authentication authentication) {
+        return service.register(currentUserService.require(authentication), tournamentId, request.teamId());
     }
 
     @GetMapping("/teams/{teamId}/registrations")
@@ -44,18 +49,18 @@ public class RegistrationController {
     }
 
     @PutMapping("/registrations/{id}/approve")
-    public RegistrationResponse approve(@PathVariable Long id) {
-        return service.approve(id);
+    public RegistrationResponse approve(@PathVariable Long id, Authentication authentication) {
+        return service.approve(currentUserService.require(authentication), id);
     }
 
     @PutMapping("/registrations/{id}/reject")
-    public RegistrationResponse reject(@PathVariable Long id) {
-        return service.reject(id);
+    public RegistrationResponse reject(@PathVariable Long id, Authentication authentication) {
+        return service.reject(currentUserService.require(authentication), id);
     }
 
     @DeleteMapping("/registrations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void withdraw(@PathVariable Long id) {
-        service.withdraw(id);
+    public void withdraw(@PathVariable Long id, Authentication authentication) {
+        service.withdraw(currentUserService.require(authentication), id);
     }
 }

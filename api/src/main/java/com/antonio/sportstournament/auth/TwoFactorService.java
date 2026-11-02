@@ -6,10 +6,11 @@ import com.antonio.sportstournament.auth.dto.VerifyTwoFactorRequest;
 import com.antonio.sportstournament.email.EmailService;
 import com.antonio.sportstournament.exception.ConflictException;
 import com.antonio.sportstournament.exception.UnauthorizedException;
+import com.antonio.sportstournament.security.JwtService;
 import com.antonio.sportstournament.user.User;
 import com.antonio.sportstournament.user.UserMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +26,23 @@ public class TwoFactorService {
     private final TwoFactorChallengeRepository repository;
     private final EmailService emailService;
     private final UserMapper mapper;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
     private final SecureRandom random = new SecureRandom();
     private final int validityMinutes;
     private final int maxAttempts;
     private final int resendCooldownSeconds;
 
     public TwoFactorService(TwoFactorChallengeRepository repository, EmailService emailService,
-                            UserMapper mapper,
+                            UserMapper mapper, PasswordEncoder passwordEncoder, JwtService jwtService,
                             @Value("${app.two-factor.code-validity-minutes:5}") int validityMinutes,
                             @Value("${app.two-factor.max-attempts:5}") int maxAttempts,
                             @Value("${app.two-factor.resend-cooldown-seconds:60}") int resendCooldownSeconds) {
         this.repository = repository;
         this.emailService = emailService;
         this.mapper = mapper;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
         this.validityMinutes = validityMinutes;
         this.maxAttempts = maxAttempts;
         this.resendCooldownSeconds = resendCooldownSeconds;
@@ -66,8 +70,8 @@ public class TwoFactorService {
             throw new UnauthorizedException("Invalid code. " + left + " attempts left.");
         }
         challenge.setUsed(true);
-        // TODO Step 11: issue the JWT here.
-        return mapper.toLoginResponse(challenge.getUser());
+        User user = challenge.getUser();
+        return mapper.toLoginResponse(user, jwtService.generateToken(user.getEmail()));
     }
 
     @Transactional

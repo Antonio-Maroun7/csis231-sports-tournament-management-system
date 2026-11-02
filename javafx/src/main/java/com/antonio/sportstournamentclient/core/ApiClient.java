@@ -37,7 +37,7 @@ public class ApiClient {
     // -------- Generic helpers --------
 
     public static <T> T get(String path, TypeReference<T> type) {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + path))
+        HttpRequest request = newRequest(path)
                 .header("Accept", "application/json")
                 .GET()
                 .build();
@@ -60,7 +60,7 @@ public class ApiClient {
 
     /** PUT without a request body, e.g. PUT /registrations/{id}/approve. */
     public static <T> T put(String path, Class<T> type) {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + path))
+        HttpRequest request = newRequest(path)
                 .header("Accept", "application/json")
                 .PUT(HttpRequest.BodyPublishers.noBody())
                 .build();
@@ -68,7 +68,7 @@ public class ApiClient {
     }
 
     public static void delete(String path) {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + path))
+        HttpRequest request = newRequest(path)
                 .DELETE()
                 .build();
         send(request);
@@ -76,8 +76,18 @@ public class ApiClient {
 
     // -------- Internals --------
 
+    /** The ONE place where requests are created: adds "Authorization: Bearer ..." when a user is logged in. */
+    private static HttpRequest.Builder newRequest(String path) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(BASE_URL + path));
+        String token = Session.getToken();
+        if (token != null) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+        return builder;
+    }
+
     private static HttpRequest.Builder jsonRequest(String path) {
-        return HttpRequest.newBuilder(URI.create(BASE_URL + path))
+        return newRequest(path)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json");
     }
