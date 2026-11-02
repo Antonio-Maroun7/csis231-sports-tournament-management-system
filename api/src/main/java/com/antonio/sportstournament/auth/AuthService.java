@@ -2,6 +2,9 @@ package com.antonio.sportstournament.auth;
 
 import com.antonio.sportstournament.auth.dto.LoginRequest;
 import com.antonio.sportstournament.auth.dto.LoginResponse;
+import com.antonio.sportstournament.auth.dto.AuthResult;
+import com.antonio.sportstournament.auth.dto.ResendCodeRequest;
+import com.antonio.sportstournament.auth.dto.VerifyTwoFactorRequest;
 import com.antonio.sportstournament.auth.dto.RegisterRequest;
 import com.antonio.sportstournament.exception.UnauthorizedException;
 import com.antonio.sportstournament.user.Role;
@@ -21,12 +24,15 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final UserMapper mapper;
+    private final TwoFactorService twoFactorService;
     private final  BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AuthService(UserRepository repository,UserService service,UserMapper mapper){
+    public AuthService(UserRepository repository,UserService service,UserMapper mapper,
+                       TwoFactorService twoFactorService){
         this.userRepository=repository;
         this.userService=service;
         this.mapper=mapper;
+        this.twoFactorService = twoFactorService;
     }
 
     @Transactional
@@ -36,8 +42,8 @@ public class AuthService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public LoginResponse login(LoginRequest request){
+    @Transactional
+    public AuthResult login(LoginRequest request){
         User user = userRepository.findByEmailIgnoreCase(request.email().trim())
                 .orElseThrow(()-> new UnauthorizedException("Invalid email or password"));
 
@@ -45,7 +51,20 @@ public class AuthService {
             throw new UnauthorizedException("Invalid email or password");
         }
 
-        return mapper.toLoginResponse(user);
+        if (user.getRole() == Role.ADMIN || user.getRole() == Role.ORGANIZER || user.isTwoFactorEnabled()) {
+            return twoFactorService.createChallenge(user);
+        }
+        return new AuthResult(false, null, null, null, mapper.toLoginResponse(user));
+    }
+
+    @Transactional(noRollbackFor = UnauthorizedException.class)
+    public LoginResponse verifyTwoFactor(VerifyTwoFactorRequest request) {
+        return twoFactorService.verify(request);
+    }
+
+    @Transactional
+    public AuthResult resendTwoFactor(ResendCodeRequest request) {
+        return twoFactorService.resend(request);
     }
 
 }

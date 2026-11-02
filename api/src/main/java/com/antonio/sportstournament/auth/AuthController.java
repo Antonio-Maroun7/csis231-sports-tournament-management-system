@@ -3,6 +3,9 @@ package com.antonio.sportstournament.auth;
 import com.antonio.sportstournament.auth.dto.LoginRequest;
 import com.antonio.sportstournament.auth.dto.LoginResponse;
 import com.antonio.sportstournament.auth.dto.RegisterRequest;
+import com.antonio.sportstournament.auth.dto.AuthResult;
+import com.antonio.sportstournament.auth.dto.ResendCodeRequest;
+import com.antonio.sportstournament.auth.dto.VerifyTwoFactorRequest;
 import com.antonio.sportstournament.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,7 +28,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody LoginRequest request){
+    public AuthResult login(@Valid @RequestBody LoginRequest request){
         return service.login(request);
+    }
+
+    @PostMapping("/verify-2fa")
+    public LoginResponse verifyTwoFactor(@Valid @RequestBody VerifyTwoFactorRequest request) {
+        return service.verifyTwoFactor(request);
+    }
+
+    @PostMapping("/resend-2fa")
+    public AuthResult resendTwoFactor(@Valid @RequestBody ResendCodeRequest request) {
+        return service.resendTwoFactor(request);
     }
 }

@@ -13,6 +13,7 @@ public class UserMapper {
         user.setEmail(email);
         user.setPasswordHash(passwordHash);
         user.setRole(role);
+        user.setTwoFactorEnabled(role == Role.ADMIN || role == Role.ORGANIZER);
         return user;
     }
 

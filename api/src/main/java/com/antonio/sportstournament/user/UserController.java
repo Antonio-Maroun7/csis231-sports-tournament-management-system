@@ -2,6 +2,7 @@ package com.antonio.sportstournament.user;
 
 import com.antonio.sportstournament.user.dto.UserCreateRequest;
 import com.antonio.sportstournament.user.dto.UserResponse;
+import com.antonio.sportstournament.user.dto.TwoFactorSettingRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
          service.delete(id);
+    }
+
+    @PutMapping("/{id}/two-factor")
+    public UserResponse updateTwoFactor(@PathVariable Long id,
+                                        @Valid @RequestBody TwoFactorSettingRequest request){
+        return service.updateTwoFactor(id, request.enabled());
     }
 
 }

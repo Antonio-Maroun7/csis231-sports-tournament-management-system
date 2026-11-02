@@ -48,6 +48,17 @@ public class UserService {
          return mapper.toResponse(findEntity(id));
      }
 
+     @Transactional
+     public UserResponse updateTwoFactor(Long id, boolean enabled){
+         User user = findEntity(id);
+         if (!enabled && (user.getRole() == Role.ADMIN || user.getRole() == Role.ORGANIZER)) {
+             throw new ConflictException("2FA is required for Administrators and Organizers");
+         }
+         // TODO Step 11 (JWT): only the user themself may change this.
+         user.setTwoFactorEnabled(enabled);
+         return mapper.toResponse(repository.save(user));
+     }
+
     @Transactional
      public void  delete(Long id ){
          User user = findEntity(id);
